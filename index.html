@@ -40,8 +40,23 @@
         th { background-color: #009aa6; color: white; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
         tbody tr:nth-child(even) { background-color: #f2fafa; }
 
-        input[type="number"] { width: 70px; padding: 8px; border: 2px solid #b2e0e3; border-radius: 4px; font-size: 14px; transition: border-color 0.3s; }
+        input[type="number"] { 
+            width: 70px; 
+            padding: 8px; 
+            border: 2px solid #b2e0e3; 
+            border-radius: 4px; 
+            font-size: 14px; 
+            transition: border-color 0.3s; 
+            -moz-appearance: textfield; 
+            text-align: center;
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none; 
+            margin: 0;
+        }
         input[type="number"]:focus { outline: none; border-color: #009aa6; }
+        
         .highlight { font-weight: 600; color: #005c63; transition: color 0.3s ease; }
         
         .results-container { display: flex; gap: 20px; margin-bottom: 20px; margin-top: 20px; }
@@ -49,7 +64,26 @@
         .result-title { font-size: 1em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: #005c63; font-weight: 700; }
         .result-value { font-size: 3em; font-weight: bold; transition: color 0.4s ease; }
 
-        /* COMMISSION BANNER STYLING */
+        .quick-tap-cell { display: flex; align-items: center; gap: 5px; }
+        .quick-add-btn { 
+            background-color: #009aa6; 
+            color: white; 
+            border: none; 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 4px; 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 0;
+        }
+        .quick-add-btn:hover { background-color: #005c63; }
+        .quick-add-btn:active { transform: scale(0.95); }
+
         .commission-banner {
             background: linear-gradient(135deg, #f1c40f, #f39c12);
             color: #fff;
@@ -68,13 +102,11 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* RUN RATE BOX STYLING */
         .run-rate-box { background: #fff; padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed #009aa6; margin-bottom: 40px; }
         .run-rate-inputs { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; flex-wrap: wrap; }
         .input-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .input-group label { font-weight: 600; color: #005c63; font-size: 0.9em; text-transform: uppercase; }
         
-        /* QUICK TAP BUTTONS */
         .stepper { display: flex; align-items: center; gap: 5px; }
         .stepper button { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .stepper button:hover { background-color: #005c63; }
@@ -84,6 +116,47 @@
         .standard-input input { width: 60px; text-align: center; font-size: 1.1em; font-weight: bold; }
 
         .pacing-message { font-size: 1.1em; font-weight: bold; padding: 12px; border-radius: 6px; transition: all 0.3s ease; }
+        
+        .mission-message {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.05em;
+            display: none; 
+            animation: fadeIn 0.4s ease-in;
+            text-align: left;
+        }
+        .mission-behind { background-color: #fdedec; color: #333; border: 2px solid #e74c3c; }
+        .mission-ahead { background-color: #eafaf1; color: #333; border: 2px solid #2ecc71; }
+        .mission-success { background-color: #fef9e7; color: #333; border: 2px solid #f39c12; }
+        
+        .daily-pace-line { margin-bottom: 5px; font-size: 1.1em; }
+        
+        .action-plan {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            font-size: 1em;
+            color: #333;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .action-item {
+            display: inline-block;
+            background: #009aa6;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            margin: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 154, 166, 0.3);
+        }
+        .action-or { font-size: 0.9em; color: #777; margin: 0 8px; font-weight: bold; }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-5px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
 
         .reset-btn { display: block; width: 100%; padding: 15px; margin-top: 30px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: background-color 0.3s; box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2); }
         .reset-btn:hover { background-color: #c0392b; }
@@ -94,6 +167,7 @@
             .results-container { flex-direction: column; gap: 15px; }
             .result-value { font-size: 2.5em; }
             .run-rate-inputs { flex-direction: column; gap: 20px; }
+            .quick-tap-cell input { width: 50px; } 
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -136,6 +210,7 @@
             </div>
         </div>
         <div id="pacingMessage" class="pacing-message">Enter your shifts above to see your Run Rate pacing!</div>
+        <div id="missionMessage" class="mission-message"></div>
     </div>
 
     <h2>1. Current Performance</h2>
@@ -187,26 +262,27 @@
     let savedPacing = localStorage.getItem('eeRhylPacing');
     let pacingData = savedPacing ? JSON.parse(savedPacing) : JSON.parse(JSON.stringify(defaultPacing));
 
-    // TRACKERS FOR EVERY SINGLE CATEGORY + OVERALL
     let previousKPIPercents = [0, 0, 0, 0, 0, 0];
     let previousOverallPercent = 0;
+    
+    let displayedCurrentOverall = 0;
+    let displayedProjectedOverall = 0;
+    
     let isInitialLoad = true; 
 
-    // COLOR RULE 1: For Individual KPIs (Green starts at 100%)
     function getKPIColor(percent) {
-        if (percent < 50) return '#e74c3c'; // Red
-        if (percent >= 50 && percent < 100) return '#f39c12'; // Amber up to 100%
-        if (percent >= 100 && percent < 125) return '#27ae60'; // Green 100% to 125%
-        if (percent >= 125) return '#2980b9'; // Blue
+        if (percent < 50) return '#e74c3c'; 
+        if (percent >= 50 && percent < 100) return '#f39c12'; 
+        if (percent >= 100 && percent < 125) return '#27ae60'; 
+        if (percent >= 125) return '#2980b9'; 
         return '#333'; 
     }
 
-    // COLOR RULE 2: For Overall Percentages (Green starts at 75%)
     function getOverallColor(percent) {
-        if (percent < 50) return '#e74c3c'; // Red
-        if (percent >= 50 && percent < 75) return '#f39c12'; // Amber up to 75%
-        if (percent >= 75 && percent < 125) return '#27ae60'; // Green 75% to 125%
-        if (percent >= 125) return '#2980b9'; // Blue
+        if (percent < 50) return '#e74c3c'; 
+        if (percent >= 50 && percent < 75) return '#f39c12'; 
+        if (percent >= 75 && percent < 125) return '#27ae60'; 
+        if (percent >= 125) return '#2980b9'; 
         return '#333'; 
     }
 
@@ -231,6 +307,23 @@
         }, 250);
     }
 
+    function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = progress * (2 - progress);
+            const currentVal = start + (easeProgress * (end - start));
+            element.innerText = currentVal.toFixed(2) + '%';
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                element.innerText = end.toFixed(2) + '%';
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
     function renderTables() {
         document.getElementById('shiftsCompleted').value = pacingData.completed;
         document.getElementById('totalShifts').value = pacingData.total;
@@ -245,14 +338,19 @@
             const valPerSale = cat.target > 0 ? (1 / cat.target) / 6 : 0;
             const kpiPercent = (kpi * 100);
             
-            // USING THE NEW KPI COLOR RULE
             const kpiColor = getKPIColor(kpiPercent);
 
             const trCurrent = document.createElement('tr');
             trCurrent.innerHTML = `
                 <td><strong>${cat.name}</strong></td>
                 <td><input type="number" min="0" value="${cat.target}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'target', '0'); }" oninput="updateData(${index}, 'target', this.value)"></td>
-                <td><input type="number" min="0" value="${cat.achieved}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'achieved', '0'); }" oninput="updateData(${index}, 'achieved', this.value)"></td>
+                <td>
+                    <div class="quick-tap-cell">
+                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'achieved', -1)">-</button>
+                        <input type="number" id="achieved-input-${index}" min="0" value="${cat.achieved}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'achieved', '0'); }" oninput="updateData(${index}, 'achieved', this.value)">
+                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'achieved', 1)">+</button>
+                    </div>
+                </td>
                 <td class="highlight" style="color: ${kpiColor};">${kpiPercent.toFixed(2)}%</td>
                 <td class="highlight">${(valPerSale * 100).toFixed(2)}%</td>
             `;
@@ -261,12 +359,31 @@
             const trWhatIf = document.createElement('tr');
             trWhatIf.innerHTML = `
                 <td><strong>${cat.name}</strong></td>
-                <td><input type="number" min="0" value="${cat.whatIf}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'whatIf', '0'); }" oninput="updateData(${index}, 'whatIf', this.value)"></td>
+                <td>
+                    <div class="quick-tap-cell">
+                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'whatIf', -1)">-</button>
+                        <input type="number" id="whatif-input-${index}" min="0" value="${cat.whatIf}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'whatIf', '0'); }" oninput="updateData(${index}, 'whatIf', this.value)">
+                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'whatIf', 1)">+</button>
+                    </div>
+                </td>
             `;
             whatIfBody.appendChild(trWhatIf);
         });
         calculateOverall();
-        isInitialLoad = false; 
+    }
+
+    function quickAdjust(index, field, change) {
+        let currentVal = categories[index][field] || 0;
+        let newVal = currentVal + change;
+        if (newVal < 0) newVal = 0; 
+        
+        if (field === 'achieved') {
+            document.getElementById(`achieved-input-${index}`).value = newVal;
+        } else if (field === 'whatIf') {
+            document.getElementById(`whatif-input-${index}`).value = newVal;
+        }
+        
+        updateData(index, field, newVal);
     }
 
     function updateData(index, field, value) {
@@ -282,10 +399,7 @@
         const kpiPercent = (kpi * 100);
         
         currentRows[index].children[3].innerText = kpiPercent.toFixed(2) + '%';
-        
-        // USING THE NEW KPI COLOR RULE
         currentRows[index].children[3].style.color = getKPIColor(kpiPercent); 
-        
         currentRows[index].children[4].innerText = (valPerSale * 100).toFixed(2) + '%'; 
     }
 
@@ -313,6 +427,8 @@
         let totalWhatIfBump = 0;
         let triggerConfetti = false;
 
+        let activeCats = [];
+
         categories.forEach((cat, index) => {
             let currentKPIPercent = 0;
             if(cat.target > 0) {
@@ -322,14 +438,20 @@
 
                 const valPerSale = (1 / cat.target) / 6;
                 totalWhatIfBump += (cat.whatIf * valPerSale);
+                
+                activeCats.push({
+                    name: cat.name,
+                    valPercent: valPerSale * 100
+                });
             }
             
-            // CHECK 1: Did an individual KPI just cross 100%?
             if (!isInitialLoad && currentKPIPercent >= 100 && previousKPIPercents[index] < 100) {
                 triggerConfetti = true;
             }
             previousKPIPercents[index] = currentKPIPercent; 
         });
+
+        activeCats.sort((a,b) => b.valPercent - a.valPercent);
 
         const currentOverallPercent = (totalKPI / 6) * 100;
         const projectedOverallPercent = currentOverallPercent + (totalWhatIfBump * 100);
@@ -337,14 +459,20 @@
         const currentEl = document.getElementById('currentOverall');
         const projectedEl = document.getElementById('projectedOverall');
 
-        currentEl.innerText = currentOverallPercent.toFixed(2) + '%';
-        projectedEl.innerText = projectedOverallPercent.toFixed(2) + '%';
+        if (isInitialLoad) {
+            currentEl.innerText = currentOverallPercent.toFixed(2) + '%';
+            projectedEl.innerText = projectedOverallPercent.toFixed(2) + '%';
+        } else {
+            animateValue(currentEl, displayedCurrentOverall, currentOverallPercent, 700);
+            animateValue(projectedEl, displayedProjectedOverall, projectedOverallPercent, 700);
+        }
         
-        // USING THE NEW OVERALL COLOR RULE
+        displayedCurrentOverall = currentOverallPercent;
+        displayedProjectedOverall = projectedOverallPercent;
+        
         currentEl.style.color = getOverallColor(currentOverallPercent);
         projectedEl.style.color = getOverallColor(projectedOverallPercent);
 
-        // SHOW COMMISSION BANNER IF >= 75%
         const banner = document.getElementById('commissionBanner');
         if (currentOverallPercent >= 75) {
             banner.style.display = 'block';
@@ -352,7 +480,6 @@
             banner.style.display = 'none';
         }
 
-        // CHECK 2: Did the Overall % just cross 75%?
         if (!isInitialLoad && currentOverallPercent >= 75 && previousOverallPercent < 75) {
             triggerConfetti = true;
         }
@@ -363,25 +490,80 @@
         }
 
         const msgEl = document.getElementById('pacingMessage');
+        const missionEl = document.getElementById('missionMessage');
+
         if (pacingData.completed > 0 && pacingData.total > 0) {
+            
             const projectedEOM = (currentOverallPercent / pacingData.completed) * pacingData.total;
-            if (projectedEOM >= 125) {
-                msgEl.innerHTML = `🔥 Incredible! You are pacing to hit a massive <span style="color: #2980b9;">${projectedEOM.toFixed(2)}%</span> by the end of the month!`;
-                msgEl.style.backgroundColor = '#ebf5fb';
-            } else if (projectedEOM >= 100) {
-                msgEl.innerHTML = `🚀 Great job! You are on track to hit <span style="color: #27ae60;">${projectedEOM.toFixed(2)}%</span>! Keep it up!`;
-                msgEl.style.backgroundColor = '#eafaf1';
-            } else if (projectedEOM >= 75) {
-                msgEl.innerHTML = `💸 Commission Unlocked! You are pacing to finish at <span style="color: #27ae60;">${projectedEOM.toFixed(2)}%</span>. Let's push for those 100% payouts!`;
-                msgEl.style.backgroundColor = '#eafaf1'; 
+            let pacingHeader = "";
+            let paceClass = "";
+
+            const targetPacePerShift = 100 / pacingData.total;
+            const expectedOverallNow = targetPacePerShift * pacingData.completed;
+            const jumpNeeded = expectedOverallNow - currentOverallPercent;
+
+            if (currentOverallPercent >= 100) {
+                 msgEl.style.display = 'none'; 
+                 paceClass = 'mission-success';
+                 pacingHeader = `<div class="daily-pace-line">🏆 <strong>Target Achieved!</strong> You've hit 100% and are in pure bonus territory!</div>`;
+            } else if (currentOverallPercent >= 75) {
+                 // OVER 75% - Just show pacing and hype, no combos.
+                 msgEl.style.display = 'none';
+                 paceClass = 'mission-ahead'; // Keep it green/positive since they are in commission
+                 pacingHeader = `<div class="daily-pace-line">💸 <strong>Commission Unlocked!</strong> You're currently pacing for <strong>${projectedEOM.toFixed(2)}%</strong>. Push those 100% individual KPIs to maximize your payout!</div>`;
+            } else if (jumpNeeded > 0) {
+                 msgEl.style.display = 'none';
+                 paceClass = 'mission-behind';
+                 pacingHeader = `<div class="daily-pace-line">🚨 <strong>Daily Pace:</strong> Add <strong style="color:#c0392b;">${jumpNeeded.toFixed(2)}%</strong> today to stay on track.</div>`;
             } else {
-                msgEl.innerHTML = `🛑 You are tracking behind pace at <span style="color: #e74c3c;">${projectedEOM.toFixed(2)}%</span>. Time to dig in!`;
-                msgEl.style.backgroundColor = '#fdedec';
+                 msgEl.style.display = 'none';
+                 paceClass = 'mission-ahead';
+                 pacingHeader = `<div class="daily-pace-line">🔥 <strong>Daily Pace:</strong> You're ahead! Add <strong>${targetPacePerShift.toFixed(2)}%</strong> today to maintain your lead.</div>`;
             }
+
+            // ONLY DO COMBOS IF UNDER 75%
+            let combosHTML = "";
+            if (currentOverallPercent < 75 && activeCats.length > 0) {
+                let gapToMilestone = 75 - currentOverallPercent;
+                let highestValCat = activeCats[0];
+                let secondValCat = activeCats.length > 1 ? activeCats[1] : null;
+
+                let quickestQty = Math.ceil(gapToMilestone / highestValCat.valPercent);
+                let combo1 = `<span class="action-item">${quickestQty} ${highestValCat.name}</span>`;
+                
+                let combo2 = "";
+                if (secondValCat && gapToMilestone > highestValCat.valPercent) {
+                    let remainingGap = gapToMilestone - highestValCat.valPercent;
+                    let qtyOfSecond = Math.ceil(remainingGap / secondValCat.valPercent);
+                    combo2 = `<span class="action-item">1 ${highestValCat.name} + ${qtyOfSecond} ${secondValCat.name}</span>`;
+                } else if (secondValCat && quickestQty > 1) {
+                    let qtyOfSecondOnly = Math.ceil(gapToMilestone / secondValCat.valPercent);
+                    combo2 = `<span class="action-item">${qtyOfSecondOnly} ${secondValCat.name}</span>`;
+                }
+
+                combosHTML = `
+                <div class="action-plan">
+                    <div style="margin-bottom: 8px; font-weight: bold; color: #005c63;">🎯 How to Unlock Commission (75%):</div>
+                    You need <strong>${gapToMilestone.toFixed(2)}%</strong>. Here are the easiest ways to get there:<br>
+                    <div style="margin-top: 10px;">
+                        ${combo1} 
+                        ${combo2 ? '<span class="action-or">OR</span>' + combo2 : ''}
+                    </div>
+                </div>`;
+            }
+
+            missionEl.className = `mission-message ${paceClass}`;
+            missionEl.innerHTML = pacingHeader + combosHTML;
+            missionEl.style.display = 'block';
+
         } else {
             msgEl.innerHTML = `Enter your shifts above to see your Run Rate pacing!`;
+            msgEl.style.display = 'block';
             msgEl.style.backgroundColor = 'transparent';
+            missionEl.style.display = 'none';
         }
+        
+        isInitialLoad = false;
     }
 
     function resetData() {
@@ -393,6 +575,8 @@
             
             previousOverallPercent = 0; 
             previousKPIPercents = [0, 0, 0, 0, 0, 0];
+            displayedCurrentOverall = 0;
+            displayedProjectedOverall = 0;
             
             renderTables();
         }
