@@ -5,211 +5,90 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EE Rhyl Target Calculator</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #009aa6; 
-            color: #333;
-            margin: 0;
-            padding: 20px 10px; 
-        }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 50, 50, 0.3); 
-            border-top: 8px solid #005c63; 
-        }
-        
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #009aa6; color: #333; margin: 0; padding: 20px 10px; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 50, 50, 0.3); border-top: 8px solid #005c63; }
         .logo-container { text-align: center; margin-bottom: 20px; }
-        .code-logo {
-            background-color: #009aa6; width: 85px; height: 85px; border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center; margin: 0 auto; 
-            color: #fff000; font-weight: 900; font-size: 38px; font-family: 'Arial Black', sans-serif; 
-            letter-spacing: -1px; box-shadow: 0 4px 10px rgba(0, 154, 166, 0.3); border: 3px solid #fff000;
-        }
-
+        .code-logo { background-color: #009aa6; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #fff000; font-weight: 900; font-size: 38px; letter-spacing: -1px; border: 3px solid #fff000; }
+        
         h1 { color: #005c63; text-align: center; margin-bottom: 5px; font-size: 1.8em; }
-        p.subtitle { margin-top: 0; color: #555; font-size: 1em; text-align: center; margin-bottom: 20px; }
         h2 { color: #009aa6; margin-bottom: 10px; margin-top: 30px; border-bottom: 2px solid #b2e0e3; padding-bottom: 5px; font-size: 1.3em; }
         
-        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; min-width: 500px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        th { background-color: #009aa6; color: white; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; }
-        tbody tr:nth-child(even) { background-color: #f2fafa; }
-
-        input[type="number"] { 
-            width: 70px; 
-            padding: 8px; 
-            border: 2px solid #b2e0e3; 
-            border-radius: 4px; 
-            font-size: 14px; 
-            transition: border-color 0.3s; 
-            -moz-appearance: textfield; 
-            text-align: center;
-        }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none; 
-            margin: 0;
-        }
+        input[type="number"] { width: 65px; padding: 8px; border: 2px solid #b2e0e3; border-radius: 4px; font-size: 14px; text-align: center; -moz-appearance: textfield; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"]:focus { outline: none; border-color: #009aa6; }
         
-        .highlight { font-weight: 600; color: #005c63; transition: color 0.3s ease; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; min-width: 500px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background-color: #009aa6; color: white; text-transform: uppercase; font-size: 0.85em; }
+        tbody tr:nth-child(even) { background-color: #f2fafa; }
+        .highlight { font-weight: 600; }
         
-        .results-container { display: flex; gap: 20px; margin-bottom: 20px; margin-top: 20px; }
-        .result-box { flex: 1; background: #e6f5f6; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #009aa6; box-shadow: 0 4px 10px rgba(0, 154, 166, 0.1); }
-        .result-title { font-size: 1em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; color: #005c63; font-weight: 700; }
+        /* PROGRESS BAR STYLING */
+        .progress-wrapper { position: relative; background: #e0e0e0; border-radius: 6px; padding: 8px; text-align: center; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .progress-fill { position: absolute; top: 0; left: 0; height: 100%; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.4s ease; opacity: 0.25; z-index: 0; }
+        .progress-text { position: relative; z-index: 1; font-weight: bold; letter-spacing: 0.5px; }
+
+        .results-container { display: flex; gap: 20px; margin-bottom: 20px; }
+        .result-box { flex: 1; background: #e6f5f6; padding: 20px; border-radius: 8px; text-align: center; border: 2px solid #009aa6; }
         .result-value { font-size: 3em; font-weight: bold; transition: color 0.4s ease; }
-
+        
         .quick-tap-cell { display: flex; align-items: center; gap: 5px; }
-        .quick-add-btn { 
-            background-color: #009aa6; 
-            color: white; 
-            border: none; 
-            width: 35px; 
-            height: 35px; 
-            border-radius: 4px; 
-            font-size: 1.2em; 
-            font-weight: bold; 
-            cursor: pointer; 
-            transition: background 0.2s; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 0;
-        }
+        .quick-add-btn { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.2em; }
         .quick-add-btn:hover { background-color: #005c63; }
-        .quick-add-btn:active { transform: scale(0.95); }
-
-        .commission-banner {
-            background: linear-gradient(135deg, #f1c40f, #f39c12);
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.3);
-            display: none; 
-            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid #e67e22;
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
+        
         .run-rate-box { background: #fff; padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed #009aa6; margin-bottom: 40px; }
-        .run-rate-inputs { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; flex-wrap: wrap; }
-        .input-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .input-group label { font-weight: 600; color: #005c63; font-size: 0.9em; text-transform: uppercase; }
+        .run-rate-inputs { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
         
-        .stepper { display: flex; align-items: center; gap: 5px; }
-        .stepper button { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-size: 1.2em; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .stepper button:hover { background-color: #005c63; }
-        .stepper button:active { transform: scale(0.95); }
-        .stepper input { width: 50px; text-align: center; font-size: 1.1em; font-weight: bold; margin: 0; pointer-events: none; }
+        .mission-message { margin-top: 15px; padding: 20px; border-radius: 8px; display: none; text-align: left; border-left: 6px solid; animation: fadeIn 0.5s ease; }
+        .mission-behind { background-color: #fff5f5; border-color: #e74c3c; }
+        .mission-ahead { background-color: #f2faf6; border-color: #27ae60; }
         
-        .standard-input input { width: 60px; text-align: center; font-size: 1.1em; font-weight: bold; }
+        .combo-box { background: white; margin-top: 10px; padding: 12px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .strategy-label { display: block; color: #005c63; font-weight: bold; font-size: 0.85em; margin-bottom: 6px; text-transform: uppercase; }
+        .action-item { display: inline-block; background: #009aa6; color: white; padding: 6px 12px; border-radius: 6px; margin: 3px; font-weight: bold; font-size: 0.95em; }
+        .action-or { font-weight: bold; color: #777; margin: 0 8px; font-size: 0.8em; }
 
-        .pacing-message { font-size: 1.1em; font-weight: bold; padding: 12px; border-radius: 6px; transition: all 0.3s ease; }
+        .commission-banner { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.1em; margin-bottom: 20px; display: none; border: 2px solid #e67e22; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .mission-message {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.05em;
-            display: none; 
-            animation: fadeIn 0.4s ease-in;
-            text-align: left;
-        }
-        .mission-behind { background-color: #fdedec; color: #333; border: 2px solid #e74c3c; }
-        .mission-ahead { background-color: #eafaf1; color: #333; border: 2px solid #2ecc71; }
-        .mission-success { background-color: #fef9e7; color: #333; border: 2px solid #f39c12; }
-        
-        .daily-pace-line { margin-bottom: 5px; font-size: 1.1em; }
-        
-        .action-plan {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 8px;
-            font-size: 1em;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .action-item {
-            display: inline-block;
-            background: #009aa6;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 6px;
-            margin: 5px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0, 154, 166, 0.3);
-        }
-        .action-or { font-size: 0.9em; color: #777; margin: 0 8px; font-weight: bold; }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(-5px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .reset-btn { display: block; width: 100%; padding: 15px; margin-top: 30px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 1.1em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: background-color 0.3s; box-shadow: 0 4px 6px rgba(231, 76, 60, 0.2); }
+        .reset-btn { display: block; width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1.1em; text-transform: uppercase; }
         .reset-btn:hover { background-color: #c0392b; }
-        .reset-btn:active { transform: scale(0.98); }
-
-        @media (max-width: 600px) {
-            .container { padding: 20px 15px; }
-            .results-container { flex-direction: column; gap: 15px; }
-            .result-value { font-size: 2.5em; }
-            .run-rate-inputs { flex-direction: column; gap: 20px; }
-            .quick-tap-cell input { width: 50px; } 
-        }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @media (max-width: 600px) { .results-container { flex-direction: column; } .result-value { font-size: 2.5em; } .run-rate-inputs { flex-direction: column; gap: 15px; } }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-
 <div class="container">
     <div class="logo-container"><div class="code-logo">EE</div></div>
     <h1>EE Rhyl Target Calculator</h1>
-    <p class="subtitle">Update your Targets, Achieved, or What-If scenarios below to track your performance.</p>
-
+    
     <div class="results-container">
-        <div class="result-box">
-            <div class="result-title">Current Overall %</div>
-            <div class="result-value" id="currentOverall">0.00%</div>
-        </div>
-        <div class="result-box">
-            <div class="result-title">Projected % (If Achieved)</div>
-            <div class="result-value" id="projectedOverall">0.00%</div>
-        </div>
+        <div class="result-box"><div style="color:#005c63; font-weight:bold; font-size:1em; letter-spacing:1px;">CURRENT OVERALL %</div><div class="result-value" id="currentOverall">0.00%</div></div>
+        <div class="result-box"><div style="color:#005c63; font-weight:bold; font-size:1em; letter-spacing:1px;">PROJECTED %</div><div class="result-value" id="projectedOverall">0.00%</div></div>
     </div>
-
+    
     <div id="commissionBanner" class="commission-banner">
         🎉 <strong>COMMISSION UNLOCKED!</strong> You've hit 75% Overall. Any individual KPI you hit 100% on will now pay out!
     </div>
 
     <div class="run-rate-box">
         <div class="run-rate-inputs">
-            <div class="input-group">
-                <label>Shifts Completed</label>
-                <div class="stepper">
-                    <button onclick="adjustShifts(-1)">-</button>
-                    <input type="number" id="shiftsCompleted" value="0" readonly>
-                    <button onclick="adjustShifts(1)">+</button>
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <label style="font-weight:bold; color:#005c63; text-transform:uppercase; font-size:0.9em;">Completed Shifts</label>
+                <div class="quick-tap-cell" style="margin-top:5px;">
+                    <button onclick="adjustShifts(-1)" class="quick-add-btn">-</button>
+                    <input type="number" id="shiftsCompleted" value="0" readonly style="width:50px; font-weight:bold; font-size:1.1em; background:transparent; border:none; pointer-events:none;">
+                    <button onclick="adjustShifts(1)" class="quick-add-btn">+</button>
                 </div>
             </div>
-            <div class="input-group standard-input">
-                <label>Total Shifts This Month</label>
-                <input type="number" id="totalShifts" min="0" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') this.value='0'; updatePacing();" oninput="updatePacing()">
+            <div style="display:flex; flex-direction:column; align-items:center;">
+                <label style="font-weight:bold; color:#005c63; text-transform:uppercase; font-size:0.9em;">Total Shifts</label>
+                <input type="number" id="totalShifts" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updatePacing(); }" oninput="updatePacing()" style="margin-top:5px; width:60px; font-weight:bold; font-size:1.1em;">
             </div>
         </div>
-        <div id="pacingMessage" class="pacing-message">Enter your shifts above to see your Run Rate pacing!</div>
         <div id="missionMessage" class="mission-message"></div>
     </div>
 
@@ -222,7 +101,7 @@
                     <th>Target</th>
                     <th>Achieved</th>
                     <th>KPI Performance</th>
-                    <th>Value Per Sale</th>
+                    <th style="text-align: center;">Value Per Sale</th>
                 </tr>
             </thead>
             <tbody id="currentTableBody"></tbody>
@@ -232,12 +111,7 @@
     <h2>2. What if today I sold...</h2>
     <div class="table-responsive">
         <table>
-            <thead>
-                <tr>
-                    <th>KPIs</th>
-                    <th>Additional Sales</th>
-                </tr>
-            </thead>
+            <thead><tr><th>KPIs</th><th>Additional Sales</th></tr></thead>
             <tbody id="whatIfTableBody"></tbody>
         </table>
     </div>
@@ -256,56 +130,47 @@
     ];
     const defaultPacing = { completed: 0, total: 0 };
 
-    let savedData = localStorage.getItem('eeRhylTargets');
-    let categories = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(defaultCategories));
-    
-    let savedPacing = localStorage.getItem('eeRhylPacing');
-    let pacingData = savedPacing ? JSON.parse(savedPacing) : JSON.parse(JSON.stringify(defaultPacing));
-
-    let previousKPIPercents = [0, 0, 0, 0, 0, 0];
-    let previousOverallPercent = 0;
+    let categories = JSON.parse(localStorage.getItem('eeRhylTargets')) || JSON.parse(JSON.stringify(defaultCategories));
+    let pacingData = JSON.parse(localStorage.getItem('eeRhylPacing')) || JSON.parse(JSON.stringify(defaultPacing));
+    let isInitial = true;
     
     let displayedCurrentOverall = 0;
     let displayedProjectedOverall = 0;
     
-    let isInitialLoad = true; 
+    // MEMORY LOCK FOR THE COACH
+    let lastCoachCurrentP = -1;
+    let lastCoachShifts = -1;
 
-    function getKPIColor(percent) {
-        if (percent < 50) return '#e74c3c'; 
-        if (percent >= 50 && percent < 100) return '#f39c12'; 
-        if (percent >= 100 && percent < 125) return '#27ae60'; 
-        if (percent >= 125) return '#2980b9'; 
-        return '#333'; 
+    function adjustShifts(c) { 
+        pacingData.completed = Math.max(0, pacingData.completed + c); 
+        document.getElementById('shiftsCompleted').value = pacingData.completed; 
+        updatePacing(); 
+    }
+    
+    function updatePacing() { 
+        pacingData.total = parseFloat(document.getElementById('totalShifts').value) || 0; 
+        localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData)); 
+        calculate(); 
     }
 
-    function getOverallColor(percent) {
-        if (percent < 50) return '#e74c3c'; 
-        if (percent >= 50 && percent < 75) return '#f39c12'; 
-        if (percent >= 75 && percent < 125) return '#27ae60'; 
-        if (percent >= 125) return '#2980b9'; 
-        return '#333'; 
+    function quickAdjust(i, f, c) { 
+        categories[i][f] = Math.max(0, (categories[i][f] || 0) + c); 
+        if (f === 'achieved') {
+            document.getElementById(`achieved-in-${i}`).value = categories[i][f];
+        } else {
+            document.getElementById(`whatif-in-${i}`).value = categories[i][f];
+        }
+        updateData(i, f, categories[i][f]); 
     }
 
-    function fireConfetti() {
-        var duration = 3 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-
-        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-
-        var interval = setInterval(function() {
-            var timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) { return clearInterval(interval); }
-            var particleCount = 50 * (timeLeft / duration);
-            
-            confetti(Object.assign({}, defaults, { particleCount,
-                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-            }));
-            confetti(Object.assign({}, defaults, { particleCount,
-                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-            }));
-        }, 250);
+    function updateData(i, f, v) { 
+        categories[i][f] = parseFloat(v) || 0; 
+        localStorage.setItem('eeRhylTargets', JSON.stringify(categories)); 
+        calculate(); 
     }
+
+    function getKPIColor(p) { return p < 50 ? '#e74c3c' : p < 100 ? '#f39c12' : p < 125 ? '#27ae60' : '#2980b9'; }
+    function getOverallColor(p) { return p < 50 ? '#e74c3c' : p < 75 ? '#f39c12' : p < 125 ? '#27ae60' : '#2980b9'; }
 
     function animateValue(element, start, end, duration) {
         let startTimestamp = null;
@@ -313,277 +178,231 @@
             if (!startTimestamp) startTimestamp = timestamp;
             const progress = Math.min((timestamp - startTimestamp) / duration, 1);
             const easeProgress = progress * (2 - progress);
-            const currentVal = start + (easeProgress * (end - start));
-            element.innerText = currentVal.toFixed(2) + '%';
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            } else {
-                element.innerText = end.toFixed(2) + '%';
-            }
+            element.innerText = (start + (easeProgress * (end - start))).toFixed(2) + '%';
+            if (progress < 1) window.requestAnimationFrame(step);
+            else element.innerText = end.toFixed(2) + '%';
         };
         window.requestAnimationFrame(step);
     }
 
-    function renderTables() {
-        document.getElementById('shiftsCompleted').value = pacingData.completed;
-        document.getElementById('totalShifts').value = pacingData.total;
-
-        const currentBody = document.getElementById('currentTableBody');
-        const whatIfBody = document.getElementById('whatIfTableBody');
-        currentBody.innerHTML = '';
-        whatIfBody.innerHTML = '';
-
-        categories.forEach((cat, index) => {
-            const kpi = cat.target > 0 ? (cat.achieved / cat.target) : 0;
-            const valPerSale = cat.target > 0 ? (1 / cat.target) / 6 : 0;
-            const kpiPercent = (kpi * 100);
-            
-            const kpiColor = getKPIColor(kpiPercent);
-
-            const trCurrent = document.createElement('tr');
-            trCurrent.innerHTML = `
-                <td><strong>${cat.name}</strong></td>
-                <td><input type="number" min="0" value="${cat.target}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'target', '0'); }" oninput="updateData(${index}, 'target', this.value)"></td>
-                <td>
-                    <div class="quick-tap-cell">
-                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'achieved', -1)">-</button>
-                        <input type="number" id="achieved-input-${index}" min="0" value="${cat.achieved}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'achieved', '0'); }" oninput="updateData(${index}, 'achieved', this.value)">
-                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'achieved', 1)">+</button>
-                    </div>
-                </td>
-                <td class="highlight" style="color: ${kpiColor};">${kpiPercent.toFixed(2)}%</td>
-                <td class="highlight">${(valPerSale * 100).toFixed(2)}%</td>
-            `;
-            currentBody.appendChild(trCurrent);
-
-            const trWhatIf = document.createElement('tr');
-            trWhatIf.innerHTML = `
-                <td><strong>${cat.name}</strong></td>
-                <td>
-                    <div class="quick-tap-cell">
-                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'whatIf', -1)">-</button>
-                        <input type="number" id="whatif-input-${index}" min="0" value="${cat.whatIf}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${index}, 'whatIf', '0'); }" oninput="updateData(${index}, 'whatIf', this.value)">
-                        <button class="quick-add-btn" onclick="quickAdjust(${index}, 'whatIf', 1)">+</button>
-                    </div>
-                </td>
-            `;
-            whatIfBody.appendChild(trWhatIf);
-        });
-        calculateOverall();
-    }
-
-    function quickAdjust(index, field, change) {
-        let currentVal = categories[index][field] || 0;
-        let newVal = currentVal + change;
-        if (newVal < 0) newVal = 0; 
+    function calculate() {
+        let totalKPI = 0, totalWIF = 0;
+        let active = [];
         
-        if (field === 'achieved') {
-            document.getElementById(`achieved-input-${index}`).value = newVal;
-        } else if (field === 'whatIf') {
-            document.getElementById(`whatif-input-${index}`).value = newVal;
-        }
-        
-        updateData(index, field, newVal);
-    }
-
-    function updateData(index, field, value) {
-        let num = value === '' ? 0 : parseFloat(value);
-        if (isNaN(num) || num < 0) num = 0;
-        categories[index][field] = num;
-        localStorage.setItem('eeRhylTargets', JSON.stringify(categories));
-        calculateOverall();
-        
-        const currentRows = document.getElementById('currentTableBody').children;
-        const kpi = categories[index].target > 0 ? (categories[index].achieved / categories[index].target) : 0;
-        const valPerSale = categories[index].target > 0 ? (1 / categories[index].target) / 6 : 0;
-        const kpiPercent = (kpi * 100);
-        
-        currentRows[index].children[3].innerText = kpiPercent.toFixed(2) + '%';
-        currentRows[index].children[3].style.color = getKPIColor(kpiPercent); 
-        currentRows[index].children[4].innerText = (valPerSale * 100).toFixed(2) + '%'; 
-    }
-
-    function adjustShifts(change) {
-        let input = document.getElementById('shiftsCompleted');
-        let currentVal = parseInt(input.value) || 0;
-        let newVal = currentVal + change;
-        if (newVal < 0) newVal = 0; 
-        
-        input.value = newVal;
-        updatePacing();
-    }
-
-    function updatePacing() {
-        let completed = parseFloat(document.getElementById('shiftsCompleted').value) || 0;
-        let total = parseFloat(document.getElementById('totalShifts').value) || 0;
-        
-        pacingData = { completed, total };
-        localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
-        calculateOverall(); 
-    }
-
-    function calculateOverall() {
-        let totalKPI = 0;
-        let totalWhatIfBump = 0;
-        let triggerConfetti = false;
-
-        let activeCats = [];
-
-        categories.forEach((cat, index) => {
-            let currentKPIPercent = 0;
+        categories.forEach((cat, i) => {
+            let p = 0; let vps = 0;
             if(cat.target > 0) {
-                const kpi = cat.achieved / cat.target;
-                currentKPIPercent = kpi * 100;
-                totalKPI += kpi;
-
-                const valPerSale = (1 / cat.target) / 6;
-                totalWhatIfBump += (cat.whatIf * valPerSale);
-                
-                activeCats.push({
-                    name: cat.name,
-                    valPercent: valPerSale * 100
-                });
+                vps = (100 / cat.target / 6);
+                p = (cat.achieved / cat.target * 100);
+                totalKPI += (cat.achieved / cat.target);
+                totalWIF += (cat.whatIf * (vps/100));
+                active.push({ name: cat.name, vps: vps });
             }
             
-            if (!isInitialLoad && currentKPIPercent >= 100 && previousKPIPercents[index] < 100) {
-                triggerConfetti = true;
+            let fillEl = document.getElementById(`kpi-fill-${i}`);
+            let textEl = document.getElementById(`kpi-text-${i}`);
+            let vpsEl = document.getElementById(`vps-text-${i}`);
+            
+            if (fillEl && textEl && vpsEl) {
+                let color = getKPIColor(p);
+                let barWidth = Math.min(p, 100);
+                fillEl.style.width = barWidth + '%';
+                fillEl.style.backgroundColor = color;
+                textEl.innerText = p.toFixed(2) + '%';
+                textEl.style.color = color;
+                vpsEl.innerText = vps.toFixed(2) + '%';
             }
-            previousKPIPercents[index] = currentKPIPercent; 
         });
 
-        activeCats.sort((a,b) => b.valPercent - a.valPercent);
-
-        const currentOverallPercent = (totalKPI / 6) * 100;
-        const projectedOverallPercent = currentOverallPercent + (totalWhatIfBump * 100);
-
+        const currentP = (totalKPI / 6) * 100;
+        const projectedP = currentP + (totalWIF * 100);
+        
         const currentEl = document.getElementById('currentOverall');
         const projectedEl = document.getElementById('projectedOverall');
 
-        if (isInitialLoad) {
-            currentEl.innerText = currentOverallPercent.toFixed(2) + '%';
-            projectedEl.innerText = projectedOverallPercent.toFixed(2) + '%';
+        if (isInitial) {
+            currentEl.innerText = currentP.toFixed(2) + '%';
+            projectedEl.innerText = projectedP.toFixed(2) + '%';
         } else {
-            animateValue(currentEl, displayedCurrentOverall, currentOverallPercent, 700);
-            animateValue(projectedEl, displayedProjectedOverall, projectedOverallPercent, 700);
+            animateValue(currentEl, displayedCurrentOverall, currentP, 700);
+            animateValue(projectedEl, displayedProjectedOverall, projectedP, 700);
         }
         
-        displayedCurrentOverall = currentOverallPercent;
-        displayedProjectedOverall = projectedOverallPercent;
-        
-        currentEl.style.color = getOverallColor(currentOverallPercent);
-        projectedEl.style.color = getOverallColor(projectedOverallPercent);
+        displayedCurrentOverall = currentP; displayedProjectedOverall = projectedP;
+        currentEl.style.color = getOverallColor(currentP);
+        projectedEl.style.color = getOverallColor(projectedP);
 
-        const banner = document.getElementById('commissionBanner');
-        if (currentOverallPercent >= 75) {
-            banner.style.display = 'block';
-        } else {
-            banner.style.display = 'none';
+        if (!isInitial && currentP >= 75 && parseFloat(localStorage.getItem('prevScore') || 0) < 75) {
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
         }
+        localStorage.setItem('prevScore', currentP);
 
-        if (!isInitialLoad && currentOverallPercent >= 75 && previousOverallPercent < 75) {
-            triggerConfetti = true;
-        }
-        previousOverallPercent = currentOverallPercent; 
-        
-        if (triggerConfetti) {
-            fireConfetti();
-        }
+        document.getElementById('commissionBanner').style.display = currentP >= 75 ? 'block' : 'none';
 
-        const msgEl = document.getElementById('pacingMessage');
-        const missionEl = document.getElementById('missionMessage');
-
-        if (pacingData.completed > 0 && pacingData.total > 0) {
-            
-            const projectedEOM = (currentOverallPercent / pacingData.completed) * pacingData.total;
-            let pacingHeader = "";
-            let paceClass = "";
-
-            const targetPacePerShift = 100 / pacingData.total;
-            const expectedOverallNow = targetPacePerShift * pacingData.completed;
-            const jumpNeeded = expectedOverallNow - currentOverallPercent;
-
-            if (currentOverallPercent >= 100) {
-                 msgEl.style.display = 'none'; 
-                 paceClass = 'mission-success';
-                 pacingHeader = `<div class="daily-pace-line">🏆 <strong>Target Achieved!</strong> You've hit 100% and are in pure bonus territory!</div>`;
-            } else if (currentOverallPercent >= 75) {
-                 // OVER 75% - Just show pacing and hype, no combos.
-                 msgEl.style.display = 'none';
-                 paceClass = 'mission-ahead'; // Keep it green/positive since they are in commission
-                 pacingHeader = `<div class="daily-pace-line">💸 <strong>Commission Unlocked!</strong> You're currently pacing for <strong>${projectedEOM.toFixed(2)}%</strong>. Push those 100% individual KPIs to maximize your payout!</div>`;
-            } else if (jumpNeeded > 0) {
-                 msgEl.style.display = 'none';
-                 paceClass = 'mission-behind';
-                 pacingHeader = `<div class="daily-pace-line">🚨 <strong>Daily Pace:</strong> Add <strong style="color:#c0392b;">${jumpNeeded.toFixed(2)}%</strong> today to stay on track.</div>`;
-            } else {
-                 msgEl.style.display = 'none';
-                 paceClass = 'mission-ahead';
-                 pacingHeader = `<div class="daily-pace-line">🔥 <strong>Daily Pace:</strong> You're ahead! Add <strong>${targetPacePerShift.toFixed(2)}%</strong> today to maintain your lead.</div>`;
-            }
-
-            // ONLY DO COMBOS IF UNDER 75%
-            let combosHTML = "";
-            if (currentOverallPercent < 75 && activeCats.length > 0) {
-                let gapToMilestone = 75 - currentOverallPercent;
-                let highestValCat = activeCats[0];
-                let secondValCat = activeCats.length > 1 ? activeCats[1] : null;
-
-                let quickestQty = Math.ceil(gapToMilestone / highestValCat.valPercent);
-                let combo1 = `<span class="action-item">${quickestQty} ${highestValCat.name}</span>`;
-                
-                let combo2 = "";
-                if (secondValCat && gapToMilestone > highestValCat.valPercent) {
-                    let remainingGap = gapToMilestone - highestValCat.valPercent;
-                    let qtyOfSecond = Math.ceil(remainingGap / secondValCat.valPercent);
-                    combo2 = `<span class="action-item">1 ${highestValCat.name} + ${qtyOfSecond} ${secondValCat.name}</span>`;
-                } else if (secondValCat && quickestQty > 1) {
-                    let qtyOfSecondOnly = Math.ceil(gapToMilestone / secondValCat.valPercent);
-                    combo2 = `<span class="action-item">${qtyOfSecondOnly} ${secondValCat.name}</span>`;
-                }
-
-                combosHTML = `
-                <div class="action-plan">
-                    <div style="margin-bottom: 8px; font-weight: bold; color: #005c63;">🎯 How to Unlock Commission (75%):</div>
-                    You need <strong>${gapToMilestone.toFixed(2)}%</strong>. Here are the easiest ways to get there:<br>
-                    <div style="margin-top: 10px;">
-                        ${combo1} 
-                        ${combo2 ? '<span class="action-or">OR</span>' + combo2 : ''}
-                    </div>
-                </div>`;
-            }
-
-            missionEl.className = `mission-message ${paceClass}`;
-            missionEl.innerHTML = pacingHeader + combosHTML;
-            missionEl.style.display = 'block';
-
-        } else {
-            msgEl.innerHTML = `Enter your shifts above to see your Run Rate pacing!`;
-            msgEl.style.display = 'block';
-            msgEl.style.backgroundColor = 'transparent';
-            missionEl.style.display = 'none';
+        // Check the Memory Lock: Only update the Mission Coach if Actual Achieved or Shifts changed
+        if (currentP !== lastCoachCurrentP || pacingData.completed !== lastCoachShifts) {
+            updateMission(currentP, active);
+            lastCoachCurrentP = currentP;
+            lastCoachShifts = pacingData.completed;
         }
         
-        isInitialLoad = false;
+        isInitial = false;
     }
 
-    function resetData() {
-        if(confirm("Are you sure you want to reset all your data for the new month? This cannot be undone!")) {
+    function getMaxQty(name) {
+        let upperName = name.toUpperCase();
+        if (upperName.includes("UPGRADE") || upperName.includes("SIM")) return 4;
+        if (upperName.includes("HANDSET") || upperName.includes("HBB") || upperName.includes("TV")) return 2;
+        return 3;
+    }
+
+    function updateMission(currentP, active) {
+        const missionEl = document.getElementById('missionMessage');
+        const shiftsLeft = pacingData.total - pacingData.completed;
+
+        if (pacingData.total > 0 && pacingData.completed > 0) {
+            missionEl.style.display = 'block';
+            
+            if (currentP >= 75) {
+                let projEOM = (currentP / pacingData.completed) * pacingData.total;
+                missionEl.className = "mission-message mission-ahead";
+                missionEl.innerHTML = `<strong>💰 Commission Unlocked!</strong> You are pacing for <strong>${projEOM.toFixed(2)}%</strong> this month. Keep pushing those individual KPIs to maximize your payout!`;
+                return;
+            } 
+            
+            if (shiftsLeft > 0) {
+                let dailyGoal = (75 - currentP) / shiftsLeft;
+                let isCapped = false;
+                if (dailyGoal > 15) { dailyGoal = 15; isCapped = true; } 
+
+                let hbbItems = active.filter(c => c.name.includes("HBB"));
+                let baseHbb = hbbItems.length > 0 ? hbbItems[0] : active[0]; 
+                let otherItems = active.filter(c => c.name !== baseHbb.name);
+                
+                if(otherItems.length === 0) otherItems = active;
+
+                let sortedDesc = [...otherItems].sort((a,b) => b.vps - a.vps);
+                let sortedAsc = [...otherItems].sort((a,b) => a.vps - b.vps);
+
+                let remGoal = dailyGoal - baseHbb.vps;
+                let htmlContent = "";
+
+                // OPTION 1: THE FAST TRACK
+                let heavy = sortedDesc[0];
+                let q1 = remGoal > 0 ? Math.ceil(remGoal / heavy.vps) : 0;
+                if (q1 > getMaxQty(heavy.name)) { q1 = getMaxQty(heavy.name); isCapped = true; }
+                
+                let opt1 = `<span class="action-item">1 ${baseHbb.name}</span>`;
+                if (q1 > 0) opt1 += ` <span class="action-or">+</span> <span class="action-item">${q1} ${heavy.name}</span>`;
+                htmlContent += `<div class="combo-box"><span class="strategy-label">Option 1: The Fast Track</span>${opt1}</div>`;
+
+                // OPTION 2: SMALL WINS (Volume)
+                let vol = sortedAsc[0];
+                let q2 = remGoal > 0 ? Math.ceil(remGoal / vol.vps) : 1; 
+                if (q2 > getMaxQty(vol.name)) { q2 = getMaxQty(vol.name); isCapped = true; }
+                
+                let opt2 = `<span class="action-item">1 ${baseHbb.name}</span>`;
+                if (q2 > 0) opt2 += ` <span class="action-or">+</span> <span class="action-item">${q2} ${vol.name}</span>`;
+                htmlContent += `<div class="combo-box"><span class="strategy-label">Option 2: Small Wins (Volume)</span>${opt2}</div>`;
+
+                // OPTION 3: BALANCED BASKET
+                let mid = sortedDesc[Math.floor(sortedDesc.length / 2)];
+                let q3Mid = remGoal > 0 ? 1 : 0;
+                if (remGoal <= 0) q3Mid = 1; 
+                
+                let bRem = remGoal - (q3Mid > 0 ? mid.vps : 0);
+                let q3Low = bRem > 0 ? Math.ceil(bRem / vol.vps) : 0;
+                if (q3Low > getMaxQty(vol.name)) { q3Low = getMaxQty(vol.name); isCapped = true; }
+
+                let opt3 = `<span class="action-item">1 ${baseHbb.name}</span>`;
+                if (q3Mid > 0) opt3 += ` <span class="action-or">+</span> <span class="action-item">${q3Mid} ${mid.name}</span>`;
+                if (q3Low > 0 && vol.name !== mid.name) opt3 += ` <span class="action-or">+</span> <span class="action-item">${q3Low} ${vol.name}</span>`;
+                htmlContent += `<div class="combo-box"><span class="strategy-label">Option 3: The Balanced Basket</span>${opt3}</div>`;
+
+                // OPTION 4: THE WILDCARD
+                let wild1 = sortedDesc[Math.floor(Math.random() * sortedDesc.length)];
+                let wild2 = sortedAsc[Math.floor(Math.random() * sortedAsc.length)];
+                let wRem = remGoal - wild1.vps;
+                let wQ2 = wRem > 0 ? Math.ceil(wRem / wild2.vps) : 1;
+                if (wQ2 > getMaxQty(wild2.name)) { wQ2 = getMaxQty(wild2.name); isCapped = true; }
+
+                let opt4 = `<span class="action-item">1 ${baseHbb.name}</span>`;
+                opt4 += ` <span class="action-or">+</span> <span class="action-item">1 ${wild1.name}</span>`;
+                if (wild1.name !== wild2.name) opt4 += ` <span class="action-or">+</span> <span class="action-item">${wQ2} ${wild2.name}</span>`;
+                htmlContent += `<div class="combo-box"><span class="strategy-label">Option 4: The Wildcard</span>${opt4}</div>`;
+
+                missionEl.className = "mission-message mission-behind";
+                if (isCapped) {
+                    missionEl.innerHTML = `<div style="margin-bottom:10px;"><strong>🚨 Catch-Up Mode:</strong> You have a gap to close. Let's focus on having a <strong>Strong Shift</strong> today. Every option below includes your primary HBB target:</div>`;
+                } else {
+                    missionEl.innerHTML = `<div style="margin-bottom:10px;"><strong>🎯 Daily Coach:</strong> Add <strong>${dailyGoal.toFixed(2)}%</strong> today to stay on track. Here are 4 ways to hit it (Broadband included!):</div>`;
+                }
+                
+                missionEl.innerHTML += htmlContent;
+            }
+        } else {
+            missionEl.style.display = 'none';
+        }
+    }
+
+    function renderRows() {
+        const cBody = document.getElementById('currentTableBody');
+        const wBody = document.getElementById('whatIfTableBody');
+        cBody.innerHTML = ''; wBody.innerHTML = '';
+        
+        categories.forEach((cat, i) => {
+            let p = cat.target > 0 ? (cat.achieved / cat.target * 100) : 0;
+            let v = cat.target > 0 ? (100 / cat.target / 6) : 0;
+            let color = getKPIColor(p);
+            let barWidth = Math.min(p, 100); 
+            
+            cBody.innerHTML += `<tr>
+                <td><strong>${cat.name}</strong></td>
+                <td><input type="number" value="${cat.target}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'target','0'); }" oninput="updateData(${i},'target',this.value)"></td>
+                <td>
+                    <div class="quick-tap-cell">
+                        <button class="quick-add-btn" onclick="quickAdjust(${i},'achieved',-1)">-</button>
+                        <input type="number" id="achieved-in-${i}" value="${cat.achieved}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'achieved','0'); }" oninput="updateData(${i},'achieved',this.value)">
+                        <button class="quick-add-btn" onclick="quickAdjust(${i},'achieved',1)">+</button>
+                    </div>
+                </td>
+                <td style="min-width: 90px;">
+                    <div class="progress-wrapper">
+                        <div id="kpi-fill-${i}" class="progress-fill" style="width: ${barWidth}%; background-color: ${color};"></div>
+                        <span id="kpi-text-${i}" class="progress-text" style="color: ${color};">${p.toFixed(2)}%</span>
+                    </div>
+                </td>
+                <td class="highlight" id="vps-text-${i}" style="text-align: center;">${v.toFixed(2)}%</td>
+            </tr>`;
+            
+            wBody.innerHTML += `<tr>
+                <td><strong>${cat.name}</strong></td>
+                <td>
+                    <div class="quick-tap-cell">
+                        <button class="quick-add-btn" onclick="quickAdjust(${i},'whatIf',-1)">-</button>
+                        <input type="number" id="whatif-in-${i}" value="${cat.whatIf}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'whatIf','0'); }" oninput="updateData(${i},'whatIf',this.value)">
+                        <button class="quick-add-btn" onclick="quickAdjust(${i},'whatIf',1)">+</button>
+                    </div>
+                </td>
+            </tr>`;
+        });
+        
+        document.getElementById('shiftsCompleted').value = pacingData.completed;
+        document.getElementById('totalShifts').value = pacingData.total;
+    }
+
+    function resetData() { 
+        if(confirm("Are you sure you want to reset all your data for the new month? This cannot be undone!")) { 
             categories = JSON.parse(JSON.stringify(defaultCategories));
             pacingData = JSON.parse(JSON.stringify(defaultPacing));
             localStorage.setItem('eeRhylTargets', JSON.stringify(categories));
             localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
-            
-            previousOverallPercent = 0; 
-            previousKPIPercents = [0, 0, 0, 0, 0, 0];
-            displayedCurrentOverall = 0;
-            displayedProjectedOverall = 0;
-            
-            renderTables();
-        }
+            location.reload(); 
+        } 
     }
-
-    renderTables();
+    
+    renderRows(); 
+    calculate();
 </script>
-
 </body>
 </html>
