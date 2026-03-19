@@ -41,10 +41,11 @@
         .run-rate-box { background: #fff; padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed #009aa6; margin-bottom: 40px; }
         .run-rate-inputs { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
         
-        .mission-message { margin-top: 15px; padding: 20px; border-radius: 8px; display: none; text-align: left; border-left: 6px solid; animation: fadeIn 0.5s ease; }
+        .mission-message { margin-top: 15px; padding: 20px; border-radius: 8px; display: none; text-align: left; border-left: 6px solid; animation: fadeIn 0.5s ease; position: relative;}
         .mission-behind { background-color: #fff5f5; border-color: #e74c3c; }
         .mission-ahead { background-color: #f2faf6; border-color: #27ae60; }
         .mission-comeback { background-color: #f4f6ff; border-color: #3498db; color: #2c3e50; }
+        .mission-raw { background-color: #fff0f0; border-color: #c0392b; color: #2c3e50; }
         
         .combo-box { background: white; margin-top: 10px; padding: 12px; border-radius: 8px; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); line-height: 1.8; }
         .strategy-label { display: block; color: #005c63; font-weight: bold; font-size: 0.85em; margin-bottom: 6px; text-transform: uppercase; }
@@ -63,6 +64,11 @@
         .commission-banner { background: linear-gradient(135deg, #f1c40f, #f39c12); color: #fff; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.1em; margin-bottom: 20px; display: none; border: 2px solid #e67e22; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .reset-btn { display: block; width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1.1em; text-transform: uppercase; }
         .reset-btn:hover { background-color: #c0392b; }
+        
+        /* HEADER BUTTONS */
+        .coach-controls { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 12px; margin-top: -5px; }
+        .refresh-coach-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.85em; display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
+        .refresh-coach-btn:hover { background: rgba(0,0,0,0.05); color: #333; }
         
         @keyframes strike { 0% { width: 0; } 100% { width: 90%; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -145,16 +151,26 @@
 
     let categories = JSON.parse(localStorage.getItem('eeRhylTargets')) || JSON.parse(JSON.stringify(defaultCategories));
     let pacingData = JSON.parse(localStorage.getItem('eeRhylPacing')) || JSON.parse(JSON.stringify(defaultPacing));
-    
-    // Arrays to track what has previously hit 100% so we don't spam confetti
     let previousKPIs = JSON.parse(localStorage.getItem('eeRhylPrevKPIs')) || [0,0,0,0,0,0];
     
     let isInitial = true;
     let displayedCurrentOverall = 0;
     let displayedProjectedOverall = 0;
+    let isRawMode = false;
 
     function vibrate() {
-        if(navigator.vibrate) { navigator.vibrate(30); } // Subtle haptic tap for mobile
+        if(navigator.vibrate) { navigator.vibrate(30); }
+    }
+
+    function toggleRawMode(checkbox) {
+        isRawMode = checkbox.checked;
+        calculate(); 
+    }
+
+    function forceRefreshCoach() {
+        vibrate();
+        localStorage.removeItem('eeRhylCoachPicks');
+        calculate(); 
     }
 
     function adjustShifts(c) { 
@@ -222,11 +238,10 @@
                 active.push({ index: i, name: cat.name, vps: vps });
             }
             
-            // Check for INDIVIDUAL 100% Confetti
             if (!isInitial && p >= 100 && previousKPIs[i] < 100) {
                 shouldFireConfetti = true;
             }
-            previousKPIs[i] = p; // Store the new percentage
+            previousKPIs[i] = p; 
             
             let fillEl = document.getElementById(`kpi-fill-${i}`);
             let textEl = document.getElementById(`kpi-text-${i}`);
@@ -263,27 +278,17 @@
         currentEl.style.color = getOverallColor(currentP);
         projectedEl.style.color = getOverallColor(projectedP);
 
-        // Check for OVERALL 75% Confetti
         if (!isInitial && currentP >= 75 && parseFloat(localStorage.getItem('prevScore') || 0) < 75) {
             shouldFireConfetti = true;
         }
         localStorage.setItem('prevScore', currentP);
 
-        if (shouldFireConfetti) {
-            fireConfetti();
-        }
+        if (shouldFireConfetti) fireConfetti();
 
         document.getElementById('commissionBanner').style.display = currentP >= 75 ? 'block' : 'none';
 
         updateMission(currentP, active);
         isInitial = false;
-    }
-
-    function getMaxQty(name) {
-        let upperName = name.toUpperCase();
-        if (upperName.includes("UPGRADE") || upperName.includes("SIM")) return 4;
-        if (upperName.includes("HANDSET") || upperName.includes("HBB") || upperName.includes("TV")) return 2;
-        return 3;
     }
 
     function buildItem(item, qty) {
@@ -320,7 +325,6 @@
 
             let sortedDesc = [...otherItems].sort((a,b) => b.vps - a.vps);
             let sortedAsc = [...otherItems].sort((a,b) => a.vps - b.vps);
-            
             let shuffled = [...otherItems].sort(() => 0.5 - Math.random());
             let distinctWilds = [...new Set(shuffled.map(item => item.name))];
 
@@ -338,20 +342,33 @@
         }
 
         if (shiftsLeft > 0) {
-            let dailyGoal = (75 - currentP) / shiftsLeft;
-            let isCapped = false;
+            let rawDailyGoal = (75 - currentP) / shiftsLeft;
+            let dailyGoal = rawDailyGoal;
+            let isComebackMode = false;
             
             const standardDailyPace = 75 / pacingData.total; 
             const expectedOverallNow = standardDailyPace * pacingData.completed;
             const isAhead = currentP > expectedOverallNow;
             const realisticStretchGoal = standardDailyPace * 1.5; 
-            let isComebackMode = false;
 
-            if (dailyGoal > realisticStretchGoal) { 
-                dailyGoal = realisticStretchGoal; 
+            if (rawDailyGoal > realisticStretchGoal) { 
                 isComebackMode = true; 
-            } 
-            if (dailyGoal > 15) { dailyGoal = 15; isCapped = true; } 
+            }
+
+            let usingCaps = true;
+            if (isComebackMode && !isRawMode) {
+                dailyGoal = realisticStretchGoal;
+            } else if (isComebackMode && isRawMode) {
+                usingCaps = false; 
+            }
+
+            function getActiveMaxQty(name) {
+                if (!usingCaps) return Infinity;
+                let upperName = name.toUpperCase();
+                if (upperName.includes("UPGRADE") || upperName.includes("SIM")) return 4;
+                if (upperName.includes("HANDSET") || upperName.includes("HBB") || upperName.includes("TV")) return 2;
+                return 3;
+            }
 
             let getCat = (name) => active.find(c => c.name === name) || active[0];
             let hbb = getCat(dailyPicks.hbb);
@@ -365,7 +382,7 @@
 
             // OPTION 1
             let q1 = remGoal > 0 ? Math.ceil(remGoal / heavy.vps) : 0;
-            if (q1 > getMaxQty(heavy.name)) { q1 = getMaxQty(heavy.name); } 
+            if (q1 > getActiveMaxQty(heavy.name)) { q1 = getActiveMaxQty(heavy.name); } 
             
             let opt1 = buildItem(hbb, 1);
             if (q1 > 0) opt1 += ` <span class="action-or">+</span> ` + buildItem(heavy, q1);
@@ -379,10 +396,10 @@
             let opt2 = buildItem(hbb, 1);
             if (vol1.name === vol2.name) {
                 let totalQ = Math.ceil(remGoal / vol1.vps);
-                if (totalQ > getMaxQty(vol1.name)) totalQ = getMaxQty(vol1.name);
+                if (totalQ > getActiveMaxQty(vol1.name)) totalQ = getActiveMaxQty(vol1.name);
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol1, Math.max(1, totalQ));
             } else {
-                if (q2_2 > getMaxQty(vol2.name)) { q2_2 = getMaxQty(vol2.name); }
+                if (q2_2 > getActiveMaxQty(vol2.name)) { q2_2 = getActiveMaxQty(vol2.name); }
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol1, q2_1);
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol2, q2_2);
             }
@@ -394,7 +411,7 @@
             
             let bRem = remGoal - (q3Mid > 0 ? mid.vps : 0);
             let q3Low = bRem > 0 ? Math.ceil(bRem / vol1.vps) : 0;
-            if (q3Low > getMaxQty(vol1.name)) { q3Low = getMaxQty(vol1.name); } 
+            if (q3Low > getActiveMaxQty(vol1.name)) { q3Low = getActiveMaxQty(vol1.name); } 
 
             let opt3 = buildItem(hbb, 1);
             if (q3Mid > 0) opt3 += ` <span class="action-or">+</span> ` + buildItem(mid, q3Mid);
@@ -411,25 +428,43 @@
                 let wQty = 1;
                 if (w === wildCount - 1 && rem4 > wCat.vps) {
                     wQty = Math.ceil(rem4 / wCat.vps);
-                    if (wQty > getMaxQty(wCat.name)) wQty = getMaxQty(wCat.name);
+                    if (wQty > getActiveMaxQty(wCat.name)) wQty = getActiveMaxQty(wCat.name);
                 }
                 opt4 += ` <span class="action-or">+</span> ` + buildItem(wCat, wQty);
                 rem4 -= wCat.vps;
             }
             htmlContent += `<div class="combo-box"><span class="strategy-label">Option 4: The Wildcard</span>${opt4}</div>`;
 
+            // CONTROL HEADER
+            let controlsHTML = `<div class="coach-controls">`;
+            controlsHTML += `<button class="refresh-coach-btn" onclick="forceRefreshCoach()">🔄 Refresh Options</button>`;
+            
             if (isComebackMode) {
+                controlsHTML += `
+                    <label style="font-size: 0.85em; cursor: pointer; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.85); padding: 5px 12px; border-radius: 12px; font-weight: bold; color: #333; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none;">
+                        <input type="checkbox" onchange="toggleRawMode(this)" ${isRawMode ? 'checked' : ''}>
+                        🔥 Raw Math Mode
+                    </label>`;
+            }
+            controlsHTML += `</div>`;
+
+            // DYNAMIC HEADERS
+            let headerText = "";
+            if (isComebackMode && isRawMode) {
+                missionEl.className = "mission-message mission-raw";
+                headerText = `<div style="margin-bottom:10px;"><strong>🔥 Raw Math Mode:</strong> This is the exact, unedited math to hit 75%. You need a massive <strong>${dailyGoal.toFixed(2)}%</strong> today:</div>`;
+            } else if (isComebackMode && !isRawMode) {
                 missionEl.className = "mission-message mission-comeback";
-                missionEl.innerHTML = `<div style="margin-bottom:10px;"><strong>📈 The Comeback Trail:</strong> A strong shift of <strong>${dailyGoal.toFixed(2)}%</strong> gets you right back in the game. Pick a battle plan:</div>`;
+                headerText = `<div style="margin-bottom:10px;"><strong>📈 Momentum Builder:</strong> You are slightly behind pace. Let's claw that back with a highly productive <strong>${dailyGoal.toFixed(2)}%</strong> shift today. Pick a battle plan:</div>`;
             } else if (isAhead) {
                 missionEl.className = "mission-message mission-ahead";
-                missionEl.innerHTML = `<div style="margin-bottom:10px;"><strong>🔥 Great Job:</strong> You are AHEAD of pace! Just add <strong>${dailyGoal.toFixed(2)}%</strong> today to easily maintain your lead:</div>`;
+                headerText = `<div style="margin-bottom:10px;"><strong>🔥 Great Job:</strong> You are AHEAD of pace! Just add <strong>${dailyGoal.toFixed(2)}%</strong> today to easily maintain your lead:</div>`;
             } else {
                 missionEl.className = "mission-message mission-behind"; 
-                missionEl.innerHTML = `<div style="margin-bottom:10px;"><strong>🎯 Daily Coach:</strong> Add <strong>${dailyGoal.toFixed(2)}%</strong> today to stay exactly on track. Here are 4 ways to hit it:</div>`;
+                headerText = `<div style="margin-bottom:10px;"><strong>🎯 Daily Coach:</strong> Add <strong>${dailyGoal.toFixed(2)}%</strong> today to stay exactly on track. Here are 4 ways to hit it:</div>`;
             }
             
-            missionEl.innerHTML += htmlContent;
+            missionEl.innerHTML = controlsHTML + headerText + htmlContent;
 
             let sessionSalesDiff = categories.map((c, idx) => c.achieved - (dailyPicks.baseline[idx] || 0));
             let actionItems = missionEl.querySelectorAll('.action-item');
@@ -506,6 +541,7 @@
         } 
     }
     
+    // Initial Load Sequence
     renderRows(); 
     calculate();
 </script>
