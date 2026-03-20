@@ -10,20 +10,39 @@
     <title>EE Rhyl Target Calculator</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #009aa6; color: #333; margin: 0; padding: 20px 10px; transition: background-color 0.8s ease, background 0.8s ease; -webkit-tap-highlight-color: transparent; }
-        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 50, 50, 0.3); border-top: 8px solid #005c63; transition: box-shadow 0.8s ease, border-top-color 0.8s ease; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 50, 50, 0.3); border-top: 8px solid #005c63; transition: box-shadow 0.8s ease, border-top-color 0.8s ease; position: relative; }
         .logo-container { text-align: center; margin-bottom: 20px; }
-        .code-logo { background-color: #009aa6; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #fff000; font-weight: 900; font-size: 38px; letter-spacing: -1px; border: 3px solid #fff000; transition: all 0.8s ease; }
+        
+        /* THE SECRET BACKDOOR LOGO */
+        .code-logo { background-color: #009aa6; width: 85px; height: 85px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #fff000; font-weight: 900; font-size: 38px; letter-spacing: -1px; border: 3px solid #fff000; transition: all 0.8s ease; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .code-logo:active { transform: scale(0.95); }
         
         h1 { color: #005c63; text-align: center; margin-bottom: 5px; font-size: 1.8em; }
         h2 { color: #009aa6; margin-bottom: 10px; margin-top: 30px; border-bottom: 2px solid #b2e0e3; padding-bottom: 5px; font-size: 1.3em; }
         
-        /* SETUP BUTTON STYLING */
+        /* MODAL STYLING */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: none; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; padding: 20px; box-sizing: border-box;}
+        .modal-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 100%; box-shadow: 0 15px 30px rgba(0,0,0,0.3); border-top: 6px solid #f39c12; max-height: 80vh; overflow-y: auto; }
+        .modal-content h3 { margin-top: 0; color: #005c63; font-size: 1.5em; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px;}
+        .version-block { margin-bottom: 20px; }
+        .version-block h4 { margin: 0 0 10px 0; font-size: 1.1em; color: #e67e22; }
+        .version-block ul { padding-left: 20px; line-height: 1.6; color: #444; margin-top: 0; }
+        .version-block li { margin-bottom: 8px; font-size: 0.95em; }
+        .modal-btn { display: block; width: 100%; padding: 12px; background: #009aa6; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1.1em; cursor: pointer; margin-top: 20px; position: sticky; bottom: 0;}
+        
+        /* VERSION TAG */
+        .version-tag { position: fixed; bottom: 10px; right: 15px; font-size: 0.8em; color: rgba(255,255,255,0.6); font-weight: bold; z-index: 100; pointer-events: none; }
+
+        /* BUTTON STYLING */
         .setup-btn { background-color: #f39c12; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; display: block; margin: 0 auto 25px auto; font-size: 0.95em; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;}
         .setup-btn:active { transform: scale(0.95); }
+        .lock-btn { background-color: #e74c3c; animation: pulseLock 2s infinite; }
+        @keyframes pulseLock { 0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); } }
         
-        input[type="number"] { width: 65px; padding: 8px; border: 2px solid #b2e0e3; border-radius: 4px; font-size: 16px; text-align: center; -moz-appearance: textfield; }
+        input[type="number"], input[type="password"] { width: 65px; padding: 8px; border: 2px solid #b2e0e3; border-radius: 4px; font-size: 16px; text-align: center; -moz-appearance: textfield; transition: all 0.3s ease;}
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type="number"]:focus { outline: none; border-color: #009aa6; }
+        input[type="number"]:focus, input[type="password"]:focus { outline: none; border-color: #009aa6; }
+        input[type="number"]:disabled { color: #333; opacity: 1; -webkit-text-fill-color: #333; }
         
         .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; min-width: 500px; }
@@ -60,14 +79,25 @@
         .result-label { color:#005c63; font-weight:bold; font-size:0.9em; letter-spacing:1px; text-transform: uppercase; }
         .result-value { font-size: 3em; font-weight: bold; transition: color 0.4s ease; }
         
-        .quick-tap-cell { display: flex; align-items: center; gap: 5px; }
-        .quick-add-btn { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.2em; touch-action: manipulation;}
+        .quick-tap-cell { display: flex; align-items: center; justify-content: center; gap: 5px; height: 35px; }
+        .quick-add-btn { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.2em; touch-action: manipulation; transition: opacity 0.3s;}
         .quick-add-btn:hover { background-color: #005c63; }
         .quick-add-btn:active { transform: scale(0.95); }
+        .quick-add-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; }
         
-        .run-rate-box { background: #fff; padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed #009aa6; margin-bottom: 40px; }
-        .run-rate-inputs { display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 15px; }
+        /* ALIGNMENT FIX FOR RUN RATE BOX */
+        .run-rate-box { background: #fff; padding: 20px; border-radius: 8px; text-align: center; border: 2px dashed #009aa6; margin-bottom: 40px; position: relative;}
+        .run-rate-inputs { display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-bottom: 15px; }
         
+        /* SHIFT ALERT STYLING */
+        .shift-alert { background-color: #fff3cd; color: #856404; padding: 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; margin-bottom: 15px; border: 1px solid #ffeeba; animation: flashAlert 2s infinite; display: none; }
+        
+        /* FIXED LOCK MESSAGE */
+        .shift-lock-msg { color: #27ae60; font-size: 0.8em; font-weight: bold; margin-top: 8px; display: none; text-align: center; white-space: nowrap;}
+        
+        /* APP LOCKDOWN STYLING */
+        .locked-area { opacity: 0.4; pointer-events: none; filter: grayscale(100%); transition: all 0.3s ease; user-select: none; }
+
         .mission-message { margin-top: 15px; padding: 20px; border-radius: 8px; display: none; text-align: left; border-left: 6px solid; animation: fadeIn 0.5s ease; position: relative;}
         .mission-behind { background-color: #fff5f5; border-color: #e74c3c; } 
         .mission-ontrack { background-color: #fdfefe; border-color: #2c3e50; } 
@@ -94,78 +124,114 @@
         .reset-btn { display: block; width: 100%; padding: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 30px; font-size: 1.1em; text-transform: uppercase; }
         .reset-btn:hover { background-color: #c0392b; }
         
-        .coach-controls { display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-bottom: 12px; margin-top: -5px; }
-        .refresh-coach-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.85em; display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; }
+        .coach-controls { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 12px; margin-top: -5px; flex-wrap: wrap;}
+        .refresh-coach-btn { background: none; border: none; color: #555; cursor: pointer; font-weight: bold; font-size: 0.85em; display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 6px; transition: background 0.2s; border: 1px solid #ddd; }
         .refresh-coach-btn:hover { background: rgba(0,0,0,0.05); color: #333; }
         
         .credits { text-align: center; margin-top: 25px; font-size: 0.85em; color: #7f8c8d; font-style: italic; border-top: 1px solid #ecf0f1; padding-top: 15px; }
 
-        /* THE FIRE BANNER ANIMATION */
-        .fire-banner {
-            background: linear-gradient(45deg, #ff0000, #ff5a00, #ff9a00, #ffce00, #ff5a00);
-            background-size: 300% 300%;
-            animation: fireGradient 3s ease infinite, popIn 0.5s ease;
-            color: #ffffff !important;
-            text-shadow: 1px 1px 2px #000000, 0 0 10px #ff0000;
-            border: 2px solid #ffce00 !important;
-            box-shadow: 0 0 20px rgba(255, 90, 0, 0.6);
-        }
-
-        /* EPIC FIRE MODE GLOBALS */
+        /* ANIMATIONS */
+        @keyframes flashAlert { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .fire-banner { background: linear-gradient(45deg, #ff0000, #ff5a00, #ff9a00, #ffce00, #ff5a00); background-size: 300% 300%; animation: fireGradient 3s ease infinite, popIn 0.5s ease; color: #ffffff !important; text-shadow: 1px 1px 2px #000000, 0 0 10px #ff0000; border: 2px solid #ffce00 !important; box-shadow: 0 0 20px rgba(255, 90, 0, 0.6); }
         body.body-fire { background-color: #2c0000; }
         .container.container-fire { box-shadow: 0 0 60px rgba(255, 60, 0, 0.7); border-top-color: #ff3c00; }
         .logo-fire { background-color: #ff3c00 !important; box-shadow: 0 0 20px rgba(255, 60, 0, 0.8); }
-
-        /* ✨ EPIC GOLD MODE GLOBALS ✨ */
-        body.body-gold { 
-            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); 
-            background-size: 400% 400%;
-            animation: goldGradient 10s ease infinite;
-        }
-        .container.container-gold { 
-            box-shadow: 0 0 50px rgba(218, 165, 32, 0.6); 
-            border-top-color: #d4af37; 
-        }
-        .logo-gold { 
-            background: linear-gradient(45deg, #bf953f, #fcf6ba) !important; 
-            color: #333 !important; 
-            border-color: #fff !important; 
-            box-shadow: 0 0 25px rgba(218, 165, 32, 0.9); 
-        }
-
+        body.body-gold { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); background-size: 400% 400%; animation: goldGradient 10s ease infinite; }
+        .container.container-gold { box-shadow: 0 0 50px rgba(218, 165, 32, 0.6); border-top-color: #d4af37; }
+        .logo-gold { background: linear-gradient(45deg, #bf953f, #fcf6ba) !important; color: #333 !important; border-color: #fff !important; box-shadow: 0 0 25px rgba(218, 165, 32, 0.9); }
         @keyframes goldGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes fireGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         @keyframes strike { 0% { width: 0; } 100% { width: 90%; } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* --- MOBILE OPTIMIZATIONS --- */
+        /* MOBILE OPTIMIZATIONS */
         @media (max-width: 600px) {
-            .results-container { 
-                flex-direction: row; /* Keeps them side-by-side so sticky isn't huge */
-                gap: 10px; 
-                top: 5px; /* Tighter to the top on mobile */
-            }
+            .results-container { flex-direction: row; gap: 10px; top: 5px; }
             .result-box { padding: 10px 5px; }
             .result-label { font-size: 0.7em; letter-spacing: 0; }
             .result-value { font-size: 1.8em; }
-            .run-rate-inputs { flex-direction: column; gap: 20px; }
+            .run-rate-inputs { flex-direction: column; gap: 20px; align-items: center;}
             .quick-add-btn { width: 42px; height: 42px; } 
-            input[type="number"] { width: 55px; font-size: 14px; }
+            input[type="number"] { font-size: 14px; }
             .container { padding: 15px; }
             h1 { font-size: 1.4em; }
             td, th { padding: 8px 5px; font-size: 0.85em; } 
             .action-item { font-size: 0.85em; padding: 5px 8px; }
+            .version-tag { font-size: 0.7em; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+
+<div class="version-tag">v1.4.7</div>
+
+<div class="modal-overlay" id="devPasswordModal">
+    <div class="modal-content" style="max-width: 350px; text-align: center; border-top: 6px solid #e74c3c;">
+        <h3 style="margin-bottom: 15px; color: #e74c3c; border-bottom: none;">🔒 Admin Access</h3>
+        <input type="password" id="devPwdInput" placeholder="Enter Password" style="width: 80%; padding: 10px; margin-bottom: 20px; font-size: 1.1em; border: 2px solid #ccc; border-radius: 6px; text-align: center;">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="modal-btn" style="background: #95a5a6; margin-top: 0; width: 45%;" onclick="closeDevModal()">Cancel</button>
+            <button class="modal-btn" style="background: #27ae60; margin-top: 0; width: 45%;" onclick="submitDevPassword()">Unlock</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="confirmShiftsModal">
+    <div class="modal-content" style="max-width: 400px; text-align: center; border-top: 6px solid #27ae60;">
+        <h3 style="margin-bottom: 15px; color: #27ae60; border-bottom: none;">✅ Confirm Completed Shifts</h3>
+        <p style="font-size: 1.1em; color: #333; margin-bottom: 25px;">Are you sure this is correct? Your app will be locked for the rest of the day once confirmed.</p>
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="modal-btn" style="background: #95a5a6; margin-top: 0; width: 45%;" onclick="closeConfirmModal()">Cancel</button>
+            <button class="modal-btn" style="background: #27ae60; margin-top: 0; width: 45%;" onclick="executeConfirmShifts()">Yes, Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="changelogModal">
+    <div class="modal-content">
+        <h3>🚀 Release Notes</h3>
+        
+        <div class="version-block">
+            <h4 style="color:#e67e22;">v1.4.7 (The Feature Consolidation)</h4>
+            <p style="color: #555; font-size: 0.9em; margin-top: -5px;">Here is the complete list of EVERYTHING Reece has engineered into the application today:</p>
+            <ul>
+                <li><strong>Strict App Lockdown:</strong> The app completely freezes your coach, tracking, and projections until you update your Completed Shifts for the day to ensure math is never broken.</li>
+                <li><strong>Custom Modal Warnings:</strong> Replaced ugly browser prompts with sleek, branded pop-ups for confirmations, shift locks, and admin passwords.</li>
+                <li><strong>Confirm & Lock Mechanic:</strong> If you miss a day, you can adjust your shifts freely using both +/- or typing, and then click 'Confirm' to lock the app for the day.</li>
+                <li><strong>Commission Maximizer (The Vault):</strong> When you hit 75%, the app switches into Maximizer Mode. It reveals exactly what you need to sell per shift to hit 100%, featuring golden progress bars and a satisfying 'Daily Pace Hit' tick.</li>
+                <li><strong>Month Submission Lock:</strong> Added a 'Lock In' button for the start of the month to prevent accidental changes.</li>
+                <li><strong>Setup Mode & Protection:</strong> Once you enter your total shifts, Setup Mode vanishes and locks your numbers so targets cannot be accidentally changed.</li>
+                <li><strong>Anti-Duplication Coach:</strong> The Daily Coach engine has been mathematically rebuilt to ensure you are never given identical strategy options.</li>
+                <li><strong>Intraday Shift Summary:</strong> A new table drops in showing exactly how many items you've banked *today* and the % they're worth.</li>
+                <li><strong>Sticky Scoreboard:</strong> Your Current and Projected Overall % now follow you down the page so you can watch your score go up in real time.</li>
+                <li><strong>UI Enhancements:</strong> Quick-add +/- buttons added to Targets. Table headers perfectly centered above inputs and progress bars.</li>
+                <li><strong>Admin Dashboard:</strong> Secret backdoor access added via the EE logo for Management to bypass locks, run the Time Travel Simulator, and correct math without exposing passwords on the shop floor.</li>
+            </ul>
+        </div>
+
+        <button class="modal-btn" onclick="closeChangelog()">Amazing, thanks!</button>
+    </div>
+</div>
+
 <div class="container" id="mainContainer">
-    <div class="logo-container"><div class="code-logo" id="mainLogo">EE</div></div>
+
+    <div class="logo-container"><div class="code-logo" id="mainLogo" onclick="enterDevMode()">EE</div></div>
+    
+    <div id="devPanel" style="display: none; background: #2c3e50; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 2px solid #f39c12; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <span style="color: #f1c40f; font-weight: bold; font-size: 0.85em; display: block; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px;">🛠️ Developer Tools Active</span>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+            <button class="setup-btn" style="margin: 0; padding: 8px 12px; font-size: 0.85em; background: #e74c3c; box-shadow: none;" onclick="simulateNextDay()">⏩ Sim +1 Day</button>
+            <button class="setup-btn" style="margin: 0; padding: 8px 12px; font-size: 0.85em; background: #3498db; box-shadow: none;" onclick="forceRefreshCoach()">🔄 Refresh Coach</button>
+            <button class="setup-btn" style="margin: 0; padding: 8px 12px; font-size: 0.85em; background: #9b59b6; box-shadow: none;" onclick="openChangelogTester()">📜 Changelog</button>
+        </div>
+    </div>
+
     <h1>EE Rhyl Target Calculator</h1>
     
-    <button id="setupModeBtn" class="setup-btn" onclick="toggleSetupMode()">🛠️ Enable Setup Mode</button>
+    <button id="lockMonthBtn" class="setup-btn lock-btn" style="display: none;" onclick="lockMonth()">🔒 Lock In Targets & Shifts</button>
+    <button id="setupModeBtn" class="setup-btn" style="display: none;" onclick="toggleSetupMode()">🛠️ Enable Setup Mode</button>
 
     <div class="results-container">
         <div class="result-box">
@@ -183,20 +249,33 @@
     </div>
 
     <div class="run-rate-box">
+        <div id="shiftAlertBanner" class="shift-alert">
+            ⚠️ ALERT: YOU HAVEN'T UPDATED YOUR COMPLETED SHIFTS. PLEASE UPDATE IF YOU WORKED TODAY.
+        </div>
+        
         <div class="run-rate-inputs">
-            <div style="display:flex; flex-direction:column; align-items:center;">
+            <div style="display:flex; flex-direction:column; align-items:center; position: relative;">
                 <label style="font-weight:bold; color:#005c63; text-transform:uppercase; font-size:0.85em;">Completed Shifts</label>
-                <span style="font-size: 0.7em; color: #777; font-style: italic; margin-top: 2px;">(Add AFTER shift ends)</span>
-                <div class="quick-tap-cell" style="margin-top:5px;">
-                    <button onclick="adjustShifts(-1)" class="quick-add-btn">-</button>
-                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="shiftsCompleted" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; manualUpdateShifts(); }" oninput="manualUpdateShifts()" style="width:50px; font-weight:bold; font-size:1.1em; background:transparent; border:none; text-align:center; border-bottom: 1px dashed #b2e0e3;">
-                    <button onclick="adjustShifts(1)" class="quick-add-btn">+</button>
+                <span style="font-size: 0.7em; color: #777; font-style: italic; margin-top: 2px; user-select: none;">(Add AFTER shift ends)</span>
+                
+                <div style="display: flex; flex-direction: column; align-items: center; margin-top: 5px;">
+                    <div class="quick-tap-cell" style="margin-bottom: 5px;">
+                        <button id="shiftMinusBtn" onclick="adjustShifts(-1)" class="quick-add-btn">-</button>
+                        <input type="number" inputmode="numeric" pattern="[0-9]*" id="shiftsCompleted" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; } manualUpdateShifts();" style="width:50px; height: 35px; box-sizing: border-box; font-weight:bold; font-size:1.1em; background:transparent; border:none; text-align:center; border-bottom: 1px dashed #b2e0e3;">
+                        <button id="shiftPlusBtn" onclick="adjustShifts(1)" class="quick-add-btn">+</button>
+                    </div>
+                    <button id="confirmShiftsBtn" class="setup-btn" style="padding: 5px 12px; margin: 0; font-size: 0.8em; background-color: #27ae60; display: none; box-shadow: none;" onclick="confirmDailyShifts()">✅ Confirm</button>
                 </div>
+
+                <div id="shiftLockMsg" class="shift-lock-msg">🔒 Locked for today</div>
             </div>
-            <div style="display:flex; flex-direction:column; align-items:center;">
+            
+            <div style="display:flex; flex-direction:column; align-items:center; position: relative;">
                 <label style="font-weight:bold; color:#005c63; text-transform:uppercase; font-size:0.85em;">Total Shifts</label>
-                <span style="font-size: 0.7em; color: transparent; font-style: italic; margin-top: 2px;">Spacer</span>
-                <input type="number" inputmode="numeric" pattern="[0-9]*" id="totalShifts" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updatePacing(); }" oninput="updatePacing()" style="margin-top:5px; width:60px; font-weight:bold; font-size:1.1em;">
+                <span style="font-size: 0.7em; color: transparent; font-style: italic; margin-top: 2px; user-select: none;">(Add AFTER shift ends)</span>
+                <div style="margin-top:5px; height: 35px; display: flex; align-items: center;">
+                    <input type="number" inputmode="numeric" pattern="[0-9]*" id="totalShifts" value="0" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updatePacing(); }" oninput="updatePacing()" style="width:50px; height: 35px; box-sizing: border-box; font-weight:bold; font-size:1.1em;">
+                </div>
             </div>
         </div>
         
@@ -227,35 +306,40 @@
         </div>
     </div>
 
-    <h2>1. Current Performance</h2>
-    <div class="table-responsive">
-        <table>
-            <thead>
-                <tr>
-                    <th>KPIs</th>
-                    <th>Target</th>
-                    <th>Achieved</th>
-                    <th>KPI %</th>
-                    <th style="text-align: center;">VPS</th>
-                </tr>
-            </thead>
-            <tbody id="currentTableBody"></tbody>
-        </table>
-    </div>
+    <div id="tablesContainer">
+        <h2>1. Current Performance</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>KPIs</th>
+                        <th style="text-align: center;">Target</th>
+                        <th style="text-align: center;">Achieved</th>
+                        <th style="text-align: center;">KPI %</th>
+                        <th style="text-align: center;">VPS</th>
+                    </tr>
+                </thead>
+                <tbody id="currentTableBody"></tbody>
+            </table>
+        </div>
 
-    <h2>2. What if today I sold...</h2>
-    <div class="table-responsive">
-        <table>
-            <thead><tr><th>KPIs</th><th>Additional Sales</th></tr></thead>
-            <tbody id="whatIfTableBody"></tbody>
-        </table>
-    </div>
+        <h2>2. What if today I sold...</h2>
+        <div class="table-responsive">
+            <table>
+                <thead><tr><th>KPIs</th><th style="text-align: center;">Additional Sales</th></tr></thead>
+                <tbody id="whatIfTableBody"></tbody>
+            </table>
+        </div>
 
-    <button class="reset-btn" onclick="resetData()">🔄 Reset for New Month</button>
+        <button class="reset-btn" onclick="resetData()">🔄 Reset for New Month</button>
+    </div>
+    
     <div class="credits">Designed for EE Rhyl by Reece Farrelly</div>
 </div>
 
 <script>
+    const APP_VERSION = "1.4.7";
+
     const defaultCategories = [
         { name: "NEW HANDSETS", target: 0, achieved: 0, whatIf: 0 },
         { name: "UPGRADES", target: 0, achieved: 0, whatIf: 0 },
@@ -264,7 +348,7 @@
         { name: "REG HBB", target: 0, achieved: 0, whatIf: 0 },
         { name: "TV", target: 0, achieved: 0, whatIf: 0 }
     ];
-    const defaultPacing = { completed: 0, total: 0 };
+    const defaultPacing = { completed: 0, total: 0, lastUpdate: "", monthLocked: false };
 
     let categories = JSON.parse(localStorage.getItem('eeRhylTargets')) || JSON.parse(JSON.stringify(defaultCategories));
     let pacingData = JSON.parse(localStorage.getItem('eeRhylPacing')) || JSON.parse(JSON.stringify(defaultPacing));
@@ -272,12 +356,98 @@
     
     let isInitial = true;
     let isSetupMode = false;
+    let isDevMode = localStorage.getItem('eeRhylDevMode') === 'true'; 
     let displayedCurrentOverall = 0;
     let displayedProjectedOverall = 0;
     let isRawMode = false;
 
+    /* DYNAMIC TIME ENGINE FOR DEV TESTING */
+    let simulatedDateOffset = parseInt(localStorage.getItem('eeRhylSimOffset')) || 0;
+    
+    function getTodayStr() {
+        let d = new Date();
+        d.setDate(d.getDate() + simulatedDateOffset);
+        return d.toISOString().split('T')[0];
+    }
+
+    /* THE SIMULATOR NOW LOGS OUT THE ADMIN TO TEST THE LOCKDOWN SCREEN */
+    function simulateNextDay() {
+        simulatedDateOffset += 1;
+        localStorage.setItem('eeRhylSimOffset', simulatedDateOffset);
+        
+        // Kick out of Dev Mode
+        isDevMode = false;
+        localStorage.removeItem('eeRhylDevMode');
+        
+        vibrate();
+        alert("Time Travel Activated ⏩\nIt is now tomorrow. You have been logged out of Admin Mode to view the app as a standard user.");
+        location.reload(); 
+    }
+
     function vibrate() { if(navigator.vibrate) { navigator.vibrate(30); } }
     
+    /* CHECK CHANGELOG */
+    function checkVersion() {
+        let savedVersion = localStorage.getItem('eeRhylVersion');
+        if (savedVersion !== APP_VERSION) {
+            document.getElementById('changelogModal').style.display = 'flex';
+        }
+    }
+    
+    function closeChangelog() {
+        localStorage.setItem('eeRhylVersion', APP_VERSION);
+        document.getElementById('changelogModal').style.display = 'none';
+    }
+
+    function openChangelogTester() {
+        vibrate();
+        document.getElementById('changelogModal').style.display = 'flex';
+    }
+
+    /* CUSTOM SECURE PASSWORD MODAL LOGIC */
+    function enterDevMode() {
+        if(isDevMode) {
+            if(confirm("Disable Developer Mode?")) {
+                isDevMode = false;
+                simulatedDateOffset = 0; 
+                localStorage.removeItem('eeRhylSimOffset');
+                localStorage.removeItem('eeRhylDevMode');
+                alert("Developer Mode Disabled. Time restored to normal.");
+                location.reload(); 
+            }
+            return;
+        }
+        document.getElementById('devPasswordModal').style.display = 'flex';
+        document.getElementById('devPwdInput').value = '';
+        setTimeout(() => document.getElementById('devPwdInput').focus(), 100);
+    }
+    
+    function closeDevModal() {
+        document.getElementById('devPasswordModal').style.display = 'none';
+    }
+    
+    function submitDevPassword() {
+        let p = document.getElementById('devPwdInput').value;
+        if (!p) return;
+        
+        if (btoa(p.split('').reverse().join('')) === "MXNwb3ZlZA==") {
+            isDevMode = true;
+            localStorage.setItem('eeRhylDevMode', 'true');
+            document.getElementById('devPasswordModal').style.display = 'none';
+            alert("Developer Mode Unlocked.");
+            location.reload(); 
+        } else {
+            alert("Incorrect Password.");
+            document.getElementById('devPwdInput').value = '';
+        }
+    }
+    
+    document.getElementById("devPwdInput").addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            submitDevPassword();
+        }
+    });
+
     function toggleSetupMode() {
         vibrate();
         isSetupMode = !isSetupMode;
@@ -285,18 +455,46 @@
         if(isSetupMode) {
             btn.innerHTML = "✅ Save & Activate Coach";
             btn.style.backgroundColor = "#27ae60"; 
-            
-            document.getElementById('currentOverall').innerText = "---";
-            document.getElementById('projectedOverall').innerText = "---";
-            document.getElementById('currentOverall').style.color = "#ccc";
-            document.getElementById('projectedOverall').style.color = "#ccc";
-            
         } else {
             btn.innerHTML = "🛠️ Enable Setup Mode";
             btn.style.backgroundColor = "#f39c12"; 
             isInitial = true; 
             localStorage.removeItem('eeRhylCoachPicks'); 
         }
+        calculate();
+    }
+
+    /* LOCK MONTH LOGIC */
+    function lockMonth() {
+        if (pacingData.total <= 0) {
+            alert("Please enter your Total Shifts for the month before locking.");
+            return;
+        }
+        if (confirm("Are you sure this is correct? You won't be able to adjust targets or total shifts without Reece's developer access.")) {
+            pacingData.monthLocked = true;
+            pacingData.lastUpdate = getTodayStr(); // Locks out Day 1 shifts instantly
+            localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
+            isInitial = true; // Instantly snaps the top numbers into place
+            calculate();
+            window.scrollTo(0,0);
+        }
+    }
+
+    /* CUSTOM HTML MODAL FOR DAILY SHIFT CONFIRMATION */
+    function confirmDailyShifts() {
+        vibrate();
+        document.getElementById('confirmShiftsModal').style.display = 'flex';
+    }
+    
+    function closeConfirmModal() {
+        document.getElementById('confirmShiftsModal').style.display = 'none';
+    }
+    
+    function executeConfirmShifts() {
+        vibrate();
+        pacingData.lastUpdate = getTodayStr();
+        localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
+        document.getElementById('confirmShiftsModal').style.display = 'none';
         calculate();
     }
 
@@ -313,11 +511,96 @@
         vibrate(); 
         pacingData.completed = Math.max(0, pacingData.completed + c); 
         document.getElementById('shiftsCompleted').value = pacingData.completed; 
-        manualUpdateShifts(); 
+        localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
+        calculate(); 
     }
     
+    // Returns TRUE if the app should be locked down.
+    function checkShiftLocks() {
+        let todayStr = getTodayStr();
+        let shiftAlert = document.getElementById('shiftAlertBanner');
+        let shiftInput = document.getElementById('shiftsCompleted');
+        let minusBtn = document.getElementById('shiftMinusBtn');
+        let plusBtn = document.getElementById('shiftPlusBtn');
+        let lockMsg = document.getElementById('shiftLockMsg');
+        let confirmBtn = document.getElementById('confirmShiftsBtn');
+
+        // If they have not locked the month in or are in setup mode, leave it open.
+        if (!pacingData.monthLocked || isSetupMode) {
+            shiftAlert.style.display = 'none';
+            shiftInput.disabled = false;
+            plusBtn.style.display = 'inline-block';
+            minusBtn.style.display = isDevMode ? 'inline-block' : 'none'; 
+            plusBtn.disabled = false;
+            confirmBtn.style.display = 'none';
+            lockMsg.style.display = 'none';
+            return false; 
+        }
+
+        if (pacingData.lastUpdate === todayStr) {
+            // Updated today - LOCK SHIFTS
+            shiftAlert.style.display = 'none';
+            shiftInput.disabled = true;
+            plusBtn.style.display = 'none';
+            minusBtn.style.display = 'none';
+            confirmBtn.style.display = 'none';
+            lockMsg.style.display = 'block';
+            lockMsg.innerText = "🔒 Locked for today";
+            lockMsg.style.color = "#27ae60";
+            shiftInput.style.borderBottom = 'none';
+            
+            // ALLOW ADMIN TO EDIT EVEN WHEN LOCKED
+            if (isDevMode) {
+                 shiftInput.disabled = false;
+                 plusBtn.style.display = 'inline-block';
+                 minusBtn.style.display = 'inline-block';
+                 confirmBtn.style.display = 'block';
+                 lockMsg.innerText = "🛠️ Admin Override Active";
+                 lockMsg.style.color = "#f39c12";
+                 shiftInput.style.borderBottom = '1px dashed #b2e0e3';
+            }
+            return false; // App unlocked visually
+            
+        } else {
+            // Not updated today - UNLOCK SHIFTS, SHOW CONFIRM BUTTON, LOCK APP
+            shiftAlert.style.display = 'block';
+            shiftAlert.innerHTML = "⚠️ <strong>ACTION REQUIRED:</strong> UPDATE YOUR SHIFTS AND CLICK CONFIRM.";
+            shiftAlert.style.backgroundColor = "#f8d7da";
+            shiftAlert.style.color = "#721c24";
+            shiftAlert.style.border = "2px solid #f5c6cb";
+            
+            shiftInput.disabled = false;
+            plusBtn.style.display = 'inline-block';
+            
+            // REECE REQUESTED: Minus button must be available during the lockdown input phase so they can correct mistakes
+            minusBtn.style.display = 'inline-block'; 
+            
+            plusBtn.disabled = false;
+            minusBtn.disabled = false;
+            confirmBtn.style.display = 'block';
+            lockMsg.style.display = 'none';
+            shiftInput.style.borderBottom = '1px dashed #b2e0e3';
+            return true; // APP LOCKED
+        }
+    }
+
     function updatePacing() { pacingData.total = parseFloat(document.getElementById('totalShifts').value) || 0; localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData)); calculate(); }
-    function quickAdjust(i, f, c) { vibrate(); categories[i][f] = Math.max(0, (categories[i][f] || 0) + c); if (f === 'achieved') { document.getElementById(`achieved-in-${i}`).value = categories[i][f]; } else { document.getElementById(`whatif-in-${i}`).value = categories[i][f]; } updateData(i, f, categories[i][f]); }
+    
+    function quickAdjust(i, f, c) { 
+        vibrate(); 
+        categories[i][f] = Math.max(0, (categories[i][f] || 0) + c); 
+        
+        if (f === 'achieved') { 
+            document.getElementById(`achieved-in-${i}`).value = categories[i][f]; 
+        } else if (f === 'whatIf') { 
+            document.getElementById(`whatif-in-${i}`).value = categories[i][f]; 
+        } else if (f === 'target') {
+            document.getElementById(`target-in-${i}`).value = categories[i][f]; 
+        }
+        
+        updateData(i, f, categories[i][f]); 
+    }
+    
     function updateData(i, f, v) { categories[i][f] = parseFloat(v) || 0; localStorage.setItem('eeRhylTargets', JSON.stringify(categories)); calculate(); }
     function getKPIColor(p) { return p < 50 ? '#e74c3c' : p < 100 ? '#f39c12' : p < 125 ? '#27ae60' : '#2980b9'; }
     function getOverallColor(p) { return p < 50 ? '#e74c3c' : p < 75 ? '#f39c12' : p < 125 ? '#27ae60' : '#2980b9'; }
@@ -354,6 +637,57 @@
     }
 
     function calculate() {
+        let appLocked = checkShiftLocks();
+
+        let setupBtn = document.getElementById('setupModeBtn');
+        let lockBtn = document.getElementById('lockMonthBtn');
+        let devPanel = document.getElementById('devPanel');
+        let totalShiftsInput = document.getElementById('totalShifts');
+        let isTargetsLocked = false;
+        
+        // DEV PANEL
+        devPanel.style.display = isDevMode ? 'block' : 'none';
+        
+        // SETUP BUTTON - Dev Only (and only if the month has actually been locked initially)
+        if (isDevMode && pacingData.monthLocked) {
+            setupBtn.style.display = 'block';
+        } else {
+            setupBtn.style.display = 'none';
+        }
+
+        // LOCK IN BUTTON & INPUT RULES
+        if (!pacingData.monthLocked && !isSetupMode) {
+            lockBtn.style.display = 'block';
+            totalShiftsInput.disabled = false;
+            totalShiftsInput.style.border = '2px solid #b2e0e3';
+            totalShiftsInput.style.background = 'white';
+            isTargetsLocked = false;
+        } else {
+            lockBtn.style.display = 'none';
+            if (!isDevMode && !isSetupMode) {
+                totalShiftsInput.disabled = true;
+                totalShiftsInput.style.border = 'none';
+                totalShiftsInput.style.background = 'transparent';
+                isTargetsLocked = true;
+            } else {
+                totalShiftsInput.disabled = false;
+                totalShiftsInput.style.border = '2px solid #b2e0e3';
+                totalShiftsInput.style.background = 'white';
+                isTargetsLocked = false;
+            }
+        }
+
+        // Apply Target Locks 
+        for(let i=0; i<6; i++) {
+             let tInput = document.getElementById(`target-in-${i}`);
+             let tMinus = document.getElementById(`target-minus-${i}`);
+             let tPlus = document.getElementById(`target-plus-${i}`);
+             
+             if(tInput) tInput.disabled = isTargetsLocked;
+             if(tMinus) tMinus.style.display = isTargetsLocked ? 'none' : 'inline-block';
+             if(tPlus) tPlus.style.display = isTargetsLocked ? 'none' : 'inline-block';
+        }
+
         let totalKPI = 0, totalWIF = 0;
         let active = [];
         let shouldFireConfetti = false;
@@ -388,41 +722,78 @@
         const currentP = (totalKPI / 6) * 100;
         const projectedP = currentP + (totalWIF * 100);
 
-        if (!isSetupMode) {
+        // AUTO-FREEZE FOR UNLOCKED MONTH OR SETUP MODE
+        if (isSetupMode || !pacingData.monthLocked) {
             const currentEl = document.getElementById('currentOverall');
             const projectedEl = document.getElementById('projectedOverall');
+            currentEl.innerText = "---";
+            projectedEl.innerText = "---";
+            currentEl.style.color = "#ccc";
+            projectedEl.style.color = "#ccc";
 
-            if (isInitial) { 
-                currentEl.innerText = currentP.toFixed(2) + '%'; 
-                projectedEl.innerText = projectedP.toFixed(2) + '%'; 
-            } else { 
-                animateValue(currentEl, displayedCurrentOverall, currentP, 700); 
-                animateValue(projectedEl, displayedProjectedOverall, projectedP, 700); 
-            }
-            
-            displayedCurrentOverall = currentP; 
-            displayedProjectedOverall = projectedP;
-            currentEl.style.color = getOverallColor(currentP);
-            projectedEl.style.color = getOverallColor(projectedP);
-        }
-
-        if (isSetupMode) {
             document.getElementById('missionMessage').style.display = 'block';
             document.getElementById('missionMessage').className = "mission-message mission-setup";
-            document.getElementById('missionMessage').innerHTML = `<div style="text-align:center;"><strong>🛠️ SETUP MODE ACTIVE</strong><br><br><span style="font-size:0.95em; color:#555;">Enter your mid-month numbers in peace. The Coach and master stats are paused.<br><br>Click <strong>Save & Activate Coach</strong> at the top when you are finished!</span></div>`;
+            
+            if (isSetupMode) {
+                document.getElementById('missionMessage').innerHTML = `<div style="text-align:center;"><strong>🛠️ SETUP MODE ACTIVE</strong><br><br><span style="font-size:0.95em; color:#555;">Enter your mid-month numbers in peace. The Coach and master stats are paused.<br><br>Click <strong>Save & Activate Coach</strong> at the top when you are finished!</span></div>`;
+            } else {
+                document.getElementById('missionMessage').innerHTML = `<div style="text-align:center;"><strong>👋 Welcome to the Daily Coach!</strong><br><br><span style="font-size:0.9em; color:#555;">Please enter your Targets, Total Shifts, and Completed Shifts for the month below, then click <strong>Lock In Targets & Shifts</strong> at the top to unlock your playbook!</span></div>`;
+            }
             
             document.getElementById('maximizerMessage').style.display = 'none';
             document.getElementById('shiftSummaryContainer').style.display = 'none';
             document.getElementById('commissionBanner').style.display = 'none';
+            document.getElementById('tablesContainer').classList.remove('locked-area');
             
             document.body.classList.remove('body-gold', 'body-fire');
             document.getElementById('mainContainer').classList.remove('container-gold', 'container-fire');
             document.getElementById('mainLogo').classList.remove('logo-gold', 'logo-fire');
 
-            localStorage.setItem('prevScore', currentP); 
             localStorage.setItem('eeRhylPrevKPIs', JSON.stringify(previousKPIs));
-            return;
+            return; // EXIT EARLY
         }
+
+        if (appLocked) {
+            const currentEl = document.getElementById('currentOverall');
+            const projectedEl = document.getElementById('projectedOverall');
+            currentEl.innerText = "🔒";
+            projectedEl.innerText = "🔒";
+            currentEl.style.color = "#e74c3c";
+            projectedEl.style.color = "#e74c3c";
+
+            document.getElementById('missionMessage').style.display = 'block';
+            document.getElementById('missionMessage').className = "mission-message mission-raw";
+            document.getElementById('missionMessage').innerHTML = `<div style="text-align:center; padding: 10px;"><strong>🔒 APP LOCKED</strong><br><br><span style="font-size:0.95em; color:#555;">The Coach and Projections are disabled to protect the math. Please update your <strong>Completed Shifts</strong> above and click <strong>CONFIRM</strong> to unlock the app for today!</span></div>`;
+            
+            document.getElementById('maximizerMessage').style.display = 'none';
+            document.getElementById('shiftSummaryContainer').style.display = 'none';
+            document.getElementById('commissionBanner').style.display = 'none';
+            document.getElementById('tablesContainer').classList.add('locked-area');
+            
+            document.body.classList.remove('body-gold', 'body-fire');
+            document.getElementById('mainContainer').classList.remove('container-gold', 'container-fire');
+            document.getElementById('mainLogo').classList.remove('logo-gold', 'logo-fire');
+            return; // EXIT EARLY
+        } else {
+            document.getElementById('tablesContainer').classList.remove('locked-area');
+        }
+
+        // Normal View
+        const currentEl = document.getElementById('currentOverall');
+        const projectedEl = document.getElementById('projectedOverall');
+
+        if (isInitial) { 
+            currentEl.innerText = currentP.toFixed(2) + '%'; 
+            projectedEl.innerText = projectedP.toFixed(2) + '%'; 
+        } else { 
+            animateValue(currentEl, displayedCurrentOverall, currentP, 700); 
+            animateValue(projectedEl, displayedProjectedOverall, projectedP, 700); 
+        }
+        
+        displayedCurrentOverall = currentP; 
+        displayedProjectedOverall = projectedP;
+        currentEl.style.color = getOverallColor(currentP);
+        projectedEl.style.color = getOverallColor(projectedP);
 
         localStorage.setItem('eeRhylPrevKPIs', JSON.stringify(previousKPIs));
 
@@ -474,9 +845,10 @@
         maximizerEl.style.display = 'none';
 
         if (pacingData.total <= 0 || pacingData.completed <= 0 || active.length === 0) {
+            // Failsafe in case month is locked but shifts drop to 0 
             missionEl.style.display = 'block';
             missionEl.className = "mission-message mission-ontrack";
-            missionEl.innerHTML = `<div style="text-align:center;"><strong>👋 Welcome to the Daily Coach!</strong><br><br><span style="font-size:0.9em; color:#555;">To unlock your personalized daily playbook, please enter your <strong>Targets</strong> below, and make sure your <strong>Total Shifts</strong> and <strong>Completed Shifts</strong> are set above.</span></div>`;
+            missionEl.innerHTML = `<div style="text-align:center;"><strong>👋 Coach Paused</strong><br><br><span style="font-size:0.9em; color:#555;">Make sure your targets and shifts are fully entered to get your playbook!</span></div>`;
             summaryContainer.style.display = 'none';
             document.body.classList.remove('body-fire');
             document.getElementById('mainContainer').classList.remove('container-fire');
@@ -485,7 +857,7 @@
         }
 
         // --- 1. BASELINE CALCULATION & TODAY'S SUMMARY LOGIC ---
-        let today = new Date().toISOString().split('T')[0];
+        let today = getTodayStr();
         let dailyPicks = JSON.parse(localStorage.getItem('eeRhylCoachPicks')) || {};
 
         if (dailyPicks.date !== today || !dailyPicks.hbb || !dailyPicks.baseline || !dailyPicks.wilds) {
@@ -691,15 +1063,6 @@
                 usingCaps = false; 
             }
 
-            function getActiveMaxQty(name) {
-                if (!usingCaps) return Infinity;
-                if (!name) return 3;
-                let upperName = name.toUpperCase();
-                if (upperName.indexOf("UPGRADE") !== -1 || upperName.indexOf("SIM") !== -1) return 4;
-                if (upperName.indexOf("HANDSET") !== -1 || upperName.indexOf("HBB") !== -1 || upperName.indexOf("TV") !== -1) return 2;
-                return 3;
-            }
-
             let getCat = (name) => {
                 let found = active.filter(c => c.name === name);
                 return found.length > 0 ? found[0] : active[0];
@@ -714,55 +1077,64 @@
             let remGoal = dailyGoal - hbb.vps;
             let htmlContent = "";
 
+            // 🔥 THE ANTI-DUPLICATION ENGINE 🔥
+            
+            // Opt 1
             let q1 = remGoal > 0 ? Math.ceil(remGoal / heavy.vps) : 0;
-            if (q1 > getActiveMaxQty(heavy.name)) { q1 = getActiveMaxQty(heavy.name); } 
             let opt1 = buildItem(hbb, 1);
             if (q1 > 0) opt1 += ` <span class="action-or">+</span> ` + buildItem(heavy, q1);
             htmlContent += `<div class="combo-box"><span class="strategy-label">Option 1: The Fast Track</span>${opt1}</div>`;
 
+            // Opt 2
             let q2_1 = 1; 
             let rem2 = remGoal - vol1.vps;
             let q2_2 = rem2 > 0 ? Math.ceil(rem2 / vol2.vps) : 1; 
             let opt2 = buildItem(hbb, 1);
             if (vol1.name === vol2.name) {
                 let totalQ = Math.ceil(remGoal / vol1.vps);
-                if (totalQ > getActiveMaxQty(vol1.name)) totalQ = getActiveMaxQty(vol1.name);
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol1, Math.max(1, totalQ));
             } else {
-                if (q2_2 > getActiveMaxQty(vol2.name)) { q2_2 = getActiveMaxQty(vol2.name); }
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol1, q2_1);
                 opt2 += ` <span class="action-or">+</span> ` + buildItem(vol2, q2_2);
             }
+            if (opt2 === opt1) {
+                opt2 = buildItem(hbb, 1) + ` <span class="action-or">+</span> ` + buildItem(vol1, Math.max(2, Math.ceil(remGoal / vol1.vps) + 1));
+            }
             htmlContent += `<div class="combo-box"><span class="strategy-label">Option 2: Small Wins (Volume)</span>${opt2}</div>`;
 
+            // Opt 3
             let q3Mid = remGoal > 0 ? 1 : 0;
             if (remGoal <= 0) q3Mid = 1; 
             let bRem = remGoal - (q3Mid > 0 ? mid.vps : 0);
             let q3Low = bRem > 0 ? Math.ceil(bRem / vol1.vps) : 0;
-            if (q3Low > getActiveMaxQty(vol1.name)) { q3Low = getActiveMaxQty(vol1.name); } 
             let opt3 = buildItem(hbb, 1);
             if (q3Mid > 0) opt3 += ` <span class="action-or">+</span> ` + buildItem(mid, q3Mid);
             if (q3Low > 0 && vol1.name !== mid.name) opt3 += ` <span class="action-or">+</span> ` + buildItem(vol1, q3Low);
+            if (opt3 === opt1 || opt3 === opt2) {
+                opt3 = buildItem(hbb, 1) + ` <span class="action-or">+</span> ` + buildItem(mid, q3Mid + 1);
+            }
             htmlContent += `<div class="combo-box"><span class="strategy-label">Option 3: The Balanced Basket</span>${opt3}</div>`;
 
-            let opt4 = buildItem(hbb, 1);
-            let rem4 = remGoal;
+            // Opt 4 (Wildcard)
+            let opt4 = "";
             let safeWilds = dailyPicks.wilds || [];
-            let wildCount = Math.min(safeWilds.length, 3); 
-            for(let w = 0; w < wildCount; w++) {
+            
+            for(let w = 0; w < safeWilds.length; w++) {
                 let wCat = getCat(safeWilds[w]);
-                let wQty = 1;
-                if (w === wildCount - 1 && rem4 > wCat.vps) {
-                    wQty = Math.ceil(rem4 / wCat.vps);
-                    if (wQty > getActiveMaxQty(wCat.name)) wQty = getActiveMaxQty(wCat.name);
-                }
-                opt4 += ` <span class="action-or">+</span> ` + buildItem(wCat, wQty);
-                rem4 -= wCat.vps;
+                let wQty = Math.max(1, Math.ceil(remGoal / wCat.vps));
+                opt4 = buildItem(hbb, 1) + ` <span class="action-or">+</span> ` + buildItem(wCat, wQty);
+                if (opt4 !== opt1 && opt4 !== opt2 && opt4 !== opt3) break;
+            }
+            
+            if (opt4 === opt1 || opt4 === opt2 || opt4 === opt3 || opt4 === "") {
+                let fallbackCat = getCat(safeWilds[0] || active[0].name);
+                let fbQty = Math.max(2, Math.ceil(remGoal / fallbackCat.vps) + 1);
+                opt4 = buildItem(hbb, 1) + ` <span class="action-or">+</span> ` + buildItem(fallbackCat, fbQty);
             }
             htmlContent += `<div class="combo-box"><span class="strategy-label">Option 4: The Wildcard</span>${opt4}</div>`;
 
             let controlsHTML = `<div class="coach-controls">`;
-            controlsHTML += `<button class="refresh-coach-btn" onclick="forceRefreshCoach()">🔄 Refresh Options</button>`;
+            
             if (isComebackMode) {
                 controlsHTML += `<label style="font-size: 0.85em; cursor: pointer; display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.85); padding: 5px 12px; border-radius: 12px; font-weight: bold; color: #333; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.05); user-select: none;"><input type="checkbox" onchange="toggleRawMode(this)" ${isRawMode ? 'checked' : ''}>🔥 Raw Math Mode</label>`;
             }
@@ -878,7 +1250,13 @@
             
             cBody.innerHTML += `<tr>
                 <td><strong>${cat.name}</strong></td>
-                <td><input type="number" inputmode="numeric" pattern="[0-9]*" value="${cat.target}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'target','0'); }" oninput="updateData(${i},'target',this.value)"></td>
+                <td>
+                    <div class="quick-tap-cell">
+                        <button class="quick-add-btn" id="target-minus-${i}" onclick="quickAdjust(${i},'target',-1)">-</button>
+                        <input type="number" inputmode="numeric" pattern="[0-9]*" id="target-in-${i}" value="${cat.target}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'target','0'); }" oninput="updateData(${i},'target',this.value)">
+                        <button class="quick-add-btn" id="target-plus-${i}" onclick="quickAdjust(${i},'target',1)">+</button>
+                    </div>
+                </td>
                 <td>
                     <div class="quick-tap-cell">
                         <button class="quick-add-btn" onclick="quickAdjust(${i},'achieved',-1)">-</button>
@@ -886,7 +1264,7 @@
                         <button class="quick-add-btn" onclick="quickAdjust(${i},'achieved',1)">+</button>
                     </div>
                 </td>
-                <td style="min-width: 90px;">
+                <td style="min-width: 90px; text-align: center;">
                     <div class="progress-wrapper">
                         <div id="kpi-fill-${i}" class="progress-fill" style="width: ${barWidth}%; background-color: ${color};"></div>
                         <span id="kpi-text-${i}" class="progress-text" style="color: ${color};">${p.toFixed(2)}%</span>
@@ -897,7 +1275,7 @@
             
             wBody.innerHTML += `<tr>
                 <td><strong>${cat.name}</strong></td>
-                <td>
+                <td style="text-align: center;">
                     <div class="quick-tap-cell">
                         <button class="quick-add-btn" onclick="quickAdjust(${i},'whatIf',-1)">-</button>
                         <input type="number" inputmode="numeric" pattern="[0-9]*" id="whatif-in-${i}" value="${cat.whatIf}" onfocus="if(this.value==='0') this.value='';" onblur="if(this.value==='') { this.value='0'; updateData(${i},'whatIf','0'); }" oninput="updateData(${i},'whatIf',this.value)">
@@ -913,8 +1291,9 @@
 
     function resetData() { 
         if(confirm("Are you sure you want to reset all your data for the new month? This cannot be undone!")) { 
+            let todayStr = getTodayStr();
             categories = JSON.parse(JSON.stringify(defaultCategories));
-            pacingData = JSON.parse(JSON.stringify(defaultPacing));
+            pacingData = { completed: 0, total: 0, lastUpdate: todayStr, monthLocked: false }; 
             localStorage.setItem('eeRhylTargets', JSON.stringify(categories));
             localStorage.setItem('eeRhylPacing', JSON.stringify(pacingData));
             localStorage.removeItem('eeRhylCoachPicks'); 
@@ -927,6 +1306,7 @@
     // Initial Load Sequence
     renderRows(); 
     calculate();
+    setTimeout(checkVersion, 500); 
 </script>
 </body>
 </html>
