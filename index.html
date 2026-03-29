@@ -156,7 +156,7 @@
 </head>
 <body>
 
-<div class="version-tag">v1.6.6</div>
+<div class="version-tag">v1.6.7</div>
 
 <div class="modal-overlay" id="devPasswordModal">
     <div class="modal-content" style="max-width: 350px; text-align: center; border-top: 6px solid #e74c3c;">
@@ -184,14 +184,12 @@
     <div class="modal-content">
         <h3>🚀 Release Notes</h3>
         <div class="version-block">
-            <h4>v1.6.6</h4>
+            <h4>v1.6.7</h4>
             <p style="color: #555; font-size: 0.9em; margin-top: -5px;">Update by Reece:</p>
             <ul>
+                <li><strong>Surgical Refresh Button:</strong> The 'Refresh Options' button now strictly only re-rolls Option 5 (The Mobile-Only Mix). It will no longer wipe your baseline, your daily target, or Options 1-4. The rest of the Coach is safely locked in for the entire day.</li>
                 <li><strong>Restored Setup Instructions:</strong> Added the step-by-step setup guide and critical 'Next Morning' warnings back to the new-month screen so users know exactly how to activate the Coach without breaking their stats.</li>
-                <li><strong>No More Decimals:</strong> Permanently ripped out the decimal logic that reappeared in the buffer days. It is now completely locked back to clean, whole numbers (-1, 0, 1, 2).</li>
-                <li><strong>Phantom Crash Terminated:</strong> Scrubbed out dead math that was blocking the coach banners.</li>
-                <li><strong>Smart Visibility Tracker:</strong> Added an intelligent background tracker to prevent the app from lagging behind if left open overnight.</li>
-                <li><strong>Mobile Layout Fix:</strong> Re-engineered the mobile CSS so all columns fit perfectly on your phone screen.</li>
+                <li><strong>No More Decimals:</strong> Permanently ripped out the decimal logic from the buffer days. It is now completely locked back to clean, whole numbers.</li>
             </ul>
         </div>
         <button class="modal-btn" onclick="closeChangelog()">Amazing, thanks!</button>
@@ -310,7 +308,7 @@
 </div>
 
 <script>
-    const APP_VERSION = "1.6.6";
+    const APP_VERSION = "1.6.7";
 
     const defaultCategories = [
         { name: "NEW HANDSETS", target: 0, achieved: 0 },
@@ -465,13 +463,11 @@
         }
     }
 
+    /* THE REFRESH FIX: Now strictly only triggers a flag to shuffle Option 5's mobile mix */
     function forceRefreshCoach() { 
-        let oldPicks = JSON.parse(localStorage.getItem('eeRhylCoachPicks')) || {};
-        let savedChoice = oldPicks.comebackChoice || null;
-        localStorage.removeItem('eeRhylCoachPicks'); 
-        if (savedChoice) {
-            localStorage.setItem('eeRhylCoachPicks', JSON.stringify({ comebackChoice: savedChoice }));
-        }
+        let dailyPicks = JSON.parse(localStorage.getItem('eeRhylCoachPicks')) || {};
+        dailyPicks.refreshMobile = true;
+        localStorage.setItem('eeRhylCoachPicks', JSON.stringify(dailyPicks));
         calculate(); 
     }
     
@@ -828,33 +824,45 @@
             let today = getTodayStr();
             let dailyPicks = JSON.parse(localStorage.getItem('eeRhylCoachPicks')) || {};
 
-            if (dailyPicks.date !== today || !dailyPicks.hbb || !dailyPicks.baseline || !dailyPicks.wilds) {
-                let hbbItems = active.filter(c => c.name.indexOf("HBB") !== -1);
-                let baseHbb = hbbItems.length > 0 ? hbbItems[0] : active[0]; 
-                let otherItems = active.filter(c => c.name !== baseHbb.name);
-                if(otherItems.length === 0) otherItems = active;
+            let needsFullGen = (dailyPicks.date !== today || !dailyPicks.hbb || !dailyPicks.baseline || !dailyPicks.wilds || !dailyPicks.mobileWilds);
 
-                let sortedDesc = [...otherItems].sort((a,b) => b.vps - a.vps);
-                let sortedAsc = [...otherItems].sort((a,b) => a.vps - b.vps);
-                let shuffled = [...otherItems].sort(() => 0.5 - Math.random());
-                let distinctWilds = [];
-                for(let i=0; i<shuffled.length; i++){
-                    if(distinctWilds.indexOf(shuffled[i].name) === -1) distinctWilds.push(shuffled[i].name);
+            if (needsFullGen || dailyPicks.refreshMobile) {
+                let noHbbItems = active.filter(c => !c.name.toUpperCase().includes("HBB"));
+                let shuffledMobile = [...noHbbItems].sort(() => 0.5 - Math.random());
+                let newMobileWilds = shuffledMobile.map(c => c.name);
+
+                if (needsFullGen) {
+                    let hbbItems = active.filter(c => c.name.indexOf("HBB") !== -1);
+                    let baseHbb = hbbItems.length > 0 ? hbbItems[0] : active[0]; 
+                    let otherItems = active.filter(c => c.name !== baseHbb.name);
+                    if(otherItems.length === 0) otherItems = active;
+
+                    let sortedDesc = [...otherItems].sort((a,b) => b.vps - a.vps);
+                    let sortedAsc = [...otherItems].sort((a,b) => a.vps - b.vps);
+                    let shuffled = [...otherItems].sort(() => 0.5 - Math.random());
+                    let distinctWilds = [];
+                    for(let i=0; i<shuffled.length; i++){
+                        if(distinctWilds.indexOf(shuffled[i].name) === -1) distinctWilds.push(shuffled[i].name);
+                    }
+
+                    let oldChoice = dailyPicks.comebackChoice || null;
+
+                    dailyPicks = {
+                        date: today,
+                        hbb: baseHbb.name,
+                        heavy: sortedDesc[0].name,
+                        vol1: sortedAsc[0].name,
+                        vol2: sortedAsc.length > 1 ? sortedAsc[1].name : sortedAsc[0].name,
+                        mid: sortedDesc[Math.floor(sortedDesc.length / 2)].name,
+                        wilds: distinctWilds,
+                        baseline: categories.map(c => c.achieved),
+                        comebackChoice: oldChoice,
+                        mobileWilds: newMobileWilds
+                    };
+                } else if (dailyPicks.refreshMobile) {
+                    dailyPicks.mobileWilds = newMobileWilds;
+                    dailyPicks.refreshMobile = false;
                 }
-
-                let oldChoice = dailyPicks.comebackChoice || null;
-
-                dailyPicks = {
-                    date: today,
-                    hbb: baseHbb.name,
-                    heavy: sortedDesc[0].name,
-                    vol1: sortedAsc[0].name,
-                    vol2: sortedAsc.length > 1 ? sortedAsc[1].name : sortedAsc[0].name,
-                    mid: sortedDesc[Math.floor(sortedDesc.length / 2)].name,
-                    wilds: distinctWilds,
-                    baseline: categories.map(c => c.achieved),
-                    comebackChoice: oldChoice
-                };
                 localStorage.setItem('eeRhylCoachPicks', JSON.stringify(dailyPicks));
             }
 
@@ -1169,11 +1177,13 @@
             let wildCats = dailyPicks.wilds.map(name => getCat(name));
             let opt4 = buildOptionHTML(hbb, dailyGoal, [...wildCats, vol1, mid, heavy], true);
             
-            let noHbbCats = active.filter(c => !c.name.toUpperCase().includes("HBB")).sort((a,b) => a.vps - b.vps);
+            let noHbbCats = active.filter(c => !c.name.toUpperCase().includes("HBB"));
             let opt5 = "";
             if (noHbbCats.length > 0) {
-                let baseNoHbb = noHbbCats[0];
-                opt5 = buildOptionHTML(baseNoHbb, dailyGoal, noHbbCats, true);
+                let mobileCatsOrder = (dailyPicks.mobileWilds || []).map(name => getCat(name)).filter(c => c && !c.name.toUpperCase().includes("HBB"));
+                if (mobileCatsOrder.length === 0) mobileCatsOrder = noHbbCats.sort((a,b) => a.vps - b.vps);
+                let baseNoHbb = mobileCatsOrder[0];
+                opt5 = buildOptionHTML(baseNoHbb, dailyGoal, mobileCatsOrder, true);
             }
 
             let tempDiv = document.createElement('div');
