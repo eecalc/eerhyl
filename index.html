@@ -128,7 +128,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* THE MOBILE CSS FIX: Reduced padding and sizes to fit all columns perfectly */
+        /* THE MOBILE CSS FIX */
         @media (max-width: 600px) {
             .container { padding: 15px 5px; box-shadow: none; border: 1px solid #ddd; border-top: 6px solid #005c63; } 
             .results-container { flex-direction: row; gap: 10px; top: 5px; }
@@ -156,7 +156,7 @@
 </head>
 <body>
 
-<div class="version-tag">v1.6.12</div>
+<div class="version-tag">v1.6.13</div>
 
 <div class="modal-overlay" id="devPasswordModal">
     <div class="modal-content" style="max-width: 350px; text-align: center; border-top: 6px solid #e74c3c;">
@@ -184,12 +184,12 @@
     <div class="modal-content">
         <h3>🚀 Release Notes</h3>
         <div class="version-block">
-            <h4>v1.6.12</h4>
+            <h4>v1.6.13</h4>
             <p style="color: #555; font-size: 0.9em; margin-top: -5px;">Update by Reece:</p>
             <ul>
-                <li><strong>Live Run Rate Update:</strong> Fixed an issue where the new Daily RR column required a manual page refresh to update after adding a shift. It is now hardwired into the live-update engine and will seamlessly adjust the exact moment you edit your shifts or targets.</li>
+                <li><strong>Static Shift Goals (The Gamified Checklist):</strong> The Daily RR column is now a frozen shift goal! Instead of the number dropping as you make sales, the number is locked at the start of your shift. When you successfully hit the target for that KPI today, the number transforms into a satisfying green "✓". It resets automatically the next morning.</li>
+                <li><strong>Crash Bug Terminated:</strong> Patched a critical logic flaw in the table renderer that caused the app to freeze when calculating the new Run Rate column. </li>
                 <li><strong>Coach Minimise Toggle:</strong> Tap 'Minimise' to save screen space when you just want to view your raw numbers, and 'Maximise' when you want your strategy back.</li>
-                <li><strong>Daily Run Rate (RR) Rounding:</strong> The Daily RR column now exclusively displays whole numbers (rounding up) since you can't sell half a product!</li>
             </ul>
         </div>
         <button class="modal-btn" onclick="closeChangelog()">Amazing, thanks!</button>
@@ -309,7 +309,7 @@
 </div>
 
 <script>
-    const APP_VERSION = "1.6.12";
+    const APP_VERSION = "1.6.13";
 
     const defaultCategories = [
         { name: "NEW HANDSETS", target: 0, achieved: 0 },
@@ -743,9 +743,6 @@
         let shouldFireConfetti = false;
         let oldKPIs = [...previousKPIs];
         
-        // This calculates Shifts Left so we can dynamically update the RR column LIVE inside the loop
-        let shiftsLeftInCalc = pacingData.total - pacingData.completed;
-        
         categories.forEach((cat, i) => {
             let p = 0; let vps = 0;
             if(cat.target > 0) {
@@ -760,7 +757,6 @@
             let fillEl = document.getElementById(`kpi-fill-${i}`);
             let textEl = document.getElementById(`kpi-text-${i}`);
             let vpsEl = document.getElementById(`vps-text-${i}`);
-            let rrEl = document.getElementById(`daily-rr-${i}`); // Live RR cell grab
             
             if (fillEl && textEl && vpsEl) {
                 let color = getKPIColor(p);
@@ -769,22 +765,6 @@
                 textEl.innerText = p.toFixed(2) + '%';
                 textEl.style.color = color;
                 vpsEl.innerText = vps.toFixed(2) + '%';
-            }
-
-            // Updates the Run Rate column in real-time when inputs change
-            if (rrEl) {
-                let dailyRR = "-";
-                if (pacingData.total > 0) {
-                    if (cat.target > 0 && cat.achieved >= cat.target) {
-                        dailyRR = "✓";
-                    } else if (shiftsLeftInCalc > 0 && cat.target > 0) {
-                        let needed = cat.target - cat.achieved;
-                        dailyRR = Math.ceil(needed / shiftsLeftInCalc).toString();
-                    } else if (cat.target > 0) {
-                        dailyRR = (cat.target - cat.achieved).toString();
-                    }
-                }
-                rrEl.innerText = dailyRR;
             }
         });
 
@@ -987,6 +967,38 @@
 
             categories.forEach((cat, idx) => {
                 let soldToday = sessionSalesDiff[idx];
+                
+                // --- STATIC DAILY RR LOGIC FOR MAIN TABLE ---
+                let rrEl = document.getElementById(`daily-rr-${idx}`);
+                if (rrEl) {
+                    if (cat.target > 0 && cat.achieved >= cat.target) {
+                        rrEl.innerText = "✓";
+                        rrEl.style.color = "#27ae60";
+                    } else if (cat.target > 0) {
+                        let startingNeeded = Math.max(0, cat.target - (baseArr[idx] || 0));
+                        let targetForToday = shiftsLeft > 0 ? Math.ceil(startingNeeded / shiftsLeft) : startingNeeded;
+                        
+                        if (targetForToday === 0 && startingNeeded > 0) {
+                             if (soldToday > 0) {
+                                 rrEl.innerText = "✓";
+                                 rrEl.style.color = "#27ae60";
+                             } else {
+                                 rrEl.innerText = "0";
+                                 rrEl.style.color = "#d35400";
+                             }
+                        } else if (soldToday >= targetForToday && targetForToday > 0) {
+                            rrEl.innerText = "✓";
+                            rrEl.style.color = "#27ae60";
+                        } else {
+                            rrEl.innerText = targetForToday.toString();
+                            rrEl.style.color = "#d35400";
+                        }
+                    } else {
+                        rrEl.innerText = "-";
+                        rrEl.style.color = "#d35400";
+                    }
+                }
+
                 if (soldToday > 0 && cat.target > 0) {
                     let vps = (100 / cat.target / 6);
                     let percentGained = soldToday * vps;
@@ -1502,26 +1514,12 @@
         const cBody = document.getElementById('currentTableBody');
         if (!cBody) return;
         cBody.innerHTML = '';
-        
-        let shiftsLeft = pacingData.total - pacingData.completed;
 
         categories.forEach((cat, i) => {
             let p = cat.target > 0 ? (cat.achieved / cat.target * 100) : 0;
             let v = cat.target > 0 ? (100 / cat.target / 6) : 0;
             let color = getKPIColor(p);
             let barWidth = Math.min(p, 100); 
-
-            let dailyRR = "-";
-            if (pacingData.total > 0) {
-                if (cat.target > 0 && cat.achieved >= cat.target) {
-                    dailyRR = "✓";
-                } else if (shiftsLeft > 0 && cat.target > 0) {
-                    let needed = cat.target - cat.achieved;
-                    dailyRR = Math.ceil(needed / shiftsLeft).toString();
-                } else if (cat.target > 0) {
-                    dailyRR = (cat.target - cat.achieved).toString();
-                }
-            }
             
             cBody.innerHTML += `<tr>
                 <td><strong>${cat.name}</strong></td>
@@ -1532,7 +1530,7 @@
                         <button class="quick-add-btn" id="target-plus-${i}" onclick="quickAdjust(${i},'target',1)">+</button>
                     </div>
                 </td>
-                <td id="daily-rr-${i}" style="text-align: center; font-weight: bold; color: #d35400; font-size: 1.1em;">${dailyRR}</td>
+                <td id="daily-rr-${i}" style="text-align: center; font-weight: bold; color: #d35400; font-size: 1.1em;">-</td>
                 <td>
                     <div class="quick-tap-cell">
                         <button class="quick-add-btn" onclick="quickAdjust(${i},'achieved',-1)">-</button>
