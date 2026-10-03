@@ -392,14 +392,55 @@
             box.style.borderTopColor = "#9b59b6";
             btn.style.background = "#9b59b6";
             body.innerHTML = `
-                <p style="margin-top:0;">Here is how you get paid under the scheme:</p>
-                <ul style="padding-left: 20px; margin-bottom: 0;">
-                    <li style="margin-bottom: 8px;"><strong>The Twin Pots:</strong> Your targets are split into Mobile and Household pots. To earn commission in either pot, you must first hit an average of 75% or higher across its three KPIs.</li>
-                    <li style="margin-bottom: 8px;"><strong>Getting Paid:</strong> Once a pot is unlocked, you get paid for each individual KPI that hits 100%.</li>
-                    <li style="margin-bottom: 8px;"><strong>The 125% Cap:</strong> Your score maxes out at 125% for each KPI, meaning you can't use massive sales in one category to cover up missed targets in another.</li>
-                    <li style="margin-bottom: 8px;"><strong>Important Rules:</strong> Assistant Managers get a 25% target reduction. For Upgrades, 75% of your target must come from devices, or your upgrade commission drops by 25%.</li>
-                    <li><strong>FCA Gateway:</strong> Your final payout is adjusted by your FCA score (NPS + Customer Outcome). Hitting 90%+ gets you 100% of your money, but dropping below 50% means you lose it all. Failing to log sales properly or skipping processes can also cost you your commission.</li>
-                </ul>
+    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🎯 Targeting Basics</h4>
+    <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li style="margin-bottom: 8px;">The scheme focuses on six key performance indicators (KPIs) divided evenly across two areas: Mobile and Household[cite: 5].</li>
+        <li style="margin-bottom: 8px;"><strong>Target Calculation:</strong> Targets are calculated on a pro-rata basis depending on the days you work[cite: 5]. Store Managers and Assistant Managers receive a 25% target reduction[cite: 5].</li>
+        <li style="margin-bottom: 8px;"><strong>Unlocking and Caps:</strong> Each KPI unlocks individually once you achieve its specific target[cite: 5]. KPI achievement is capped at 125%, and any performance beyond this cannot be used to offset missed targets in other areas[cite: 5].</li>
+        <li><strong>The 75% Banking Rule:</strong> To bank commission in either the Mobile or Household categories, you must achieve a minimum average of 75% across the three KPIs within that specific category (this rule excludes Store Managers)[cite: 6, 7].</li>
+    </ul>
+
+    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">📱 Mobile Commission</h4>
+    <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li style="margin-bottom: 8px;">The three Mobile KPIs are New Handset, New SIM & MBB, and Upgrade PAYM[cite: 6].</li>
+        <li style="margin-bottom: 8px;">Commission varies from 10% to 75% of Post SR, depending on the sale and tenure[cite: 6]. For example, New Handsets (12+ months) pay 75% of Post SR, while a 30-day New SIM pays 10%[cite: 6].</li>
+        <li style="margin-bottom: 8px;">All New and Upgrade SME connections pay a flat £2.50 per sale[cite: 6].</li>
+        <li><strong>Device Mix:</strong> When your Upgrade PAYM target is set, at least 75% of those sales must be devices; falling short of this device mix results in a 25% reduction for all Upgrade PAYM commission[cite: 6].</li>
+    </ul>
+
+    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🏠 Household Commission</h4>
+    <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li style="margin-bottom: 8px;">The three Household KPIs are New HBB (customer has no existing BT/EE broadband), Regrade HBB (existing broadband customer), and New TV[cite: 7].</li>
+        <li style="margin-bottom: 8px;">New Broadband variants pay 100% of Post SR[cite: 7].</li>
+        <li style="margin-bottom: 8px;">New TV variants pay 50% of Post SR[cite: 7].</li>
+        <li>Broadband Regrades pay 30% for SR Enrichment and 15% for SR Dilution[cite: 7].</li>
+    </ul>
+
+    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">💸 Payments & Non-Targeted Sales</h4>
+    <ul style="padding-left: 20px; margin-bottom: 20px;">
+        <li style="margin-bottom: 8px;"><strong>Payments:</strong> Mobile commissions are paid one month in arrears once the target is achieved[cite: 5]. Household commissions are split: the first £10 is paid one month in arrears, and the remainder is paid two months in arrears after EE confirms the completed order[cite: 5].</li>
+        <li style="margin-bottom: 8px;"><strong>£5.00 per sale:</strong> Gaming, Home Security, Full Cover Insurance[cite: 7].</li>
+        <li style="margin-bottom: 8px;"><strong>£3.00 per sale:</strong> SIM Free Handset[cite: 7].</li>
+        <li style="margin-bottom: 8px;"><strong>£2.50 per sale:</strong> Damage Cover Insurance[cite: 7].</li>
+        <li><strong>£1.00 per sale:</strong> PrePay Handset, PrePay SIM Only, Scam Guard[cite: 7].</li>
+    </ul>
+
+    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🛑 The FCA Gateway & Deductions</h4>
+    <ul style="padding-left: 20px; margin-bottom: 0;">
+        <li style="margin-bottom: 8px;">Before any payout is finalised, your commission is subject to the FCA Gateway, a mandatory measure based on the average of your NPS and Customer Outcome Score[cite: 8].</li>
+        <li style="margin-bottom: 8px;">This score dictates your final commission percentage[cite: 8]:
+            <ul style="margin-top: 5px; margin-bottom: 5px;">
+                <li><strong>90% and above:</strong> 100% payout[cite: 8]</li>
+                <li><strong>80% to 89%:</strong> 90% payout[cite: 8]</li>
+                <li><strong>70% to 79%:</strong> 80% payout[cite: 8]</li>
+                <li><strong>60% to 69%:</strong> 70% payout[cite: 8]</li>
+                <li><strong>50% to 59%:</strong> 60% payout[cite: 8]</li>
+                <li><strong>0% to 49%:</strong> 0% payout[cite: 8]</li>
+            </ul>
+        </li>
+        <li>The business will remove your commission entirely if you fail to follow prescribed C365 and EE sales processes, incorrectly log sales in Nexus, receive a conduct disciplinary sanction, or fail to fulfil your contracted notice period[cite: 8]. The business also reserves the right to deduct commission to cover financial losses caused by negligence or malpractice[cite: 8].</li>
+    </ul>
+`;
             `;
         } else if (type === 'perf') {
             title.innerText = "📈 Performance Management";
