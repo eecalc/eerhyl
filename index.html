@@ -13,7 +13,6 @@
         
         .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 50, 50, 0.3); border-top: 8px solid #005c63; transition: border-top-color 0.5s ease; position: relative; transform: translateZ(0); box-sizing: border-box; }
         
-        /* WORK IN PROGRESS BANNER */
         .wip-banner { background-color: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; text-align: center; font-size: 0.9em; margin-bottom: 25px; border: 2px solid #ffeeba; font-weight: bold; animation: wipPulse 3s infinite; }
         @keyframes wipPulse { 0% { opacity: 1; box-shadow: 0 0 0 rgba(243, 156, 18, 0); } 50% { opacity: 0.7; box-shadow: 0 0 10px rgba(243, 156, 18, 0.4); } 100% { opacity: 1; box-shadow: 0 0 0 rgba(243, 156, 18, 0); } }
 
@@ -60,7 +59,7 @@
         .twin-gates-container { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; position: relative; z-index: 1; }
 
         .quick-tap-cell { display: flex; align-items: center; justify-content: center; gap: 5px; height: 35px; }
-        .quick-add-btn { background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.2em; touch-action: manipulation; transition: background-color 0.1s ease, transform 0.1s ease; transform: translateZ(0); }
+        .quick-add-btn { display: inline-flex; align-items: center; justify-content: center; background-color: #009aa6; color: white; border: none; width: 35px; height: 35px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1.2em; touch-action: manipulation; transition: background-color 0.1s ease, transform 0.1s ease; transform: translateZ(0); padding: 0; line-height: 1; }
         .quick-add-btn:hover { background-color: #005c63; }
         .quick-add-btn:active { transform: scale(0.95); }
         .quick-add-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; }
@@ -110,7 +109,7 @@
 </head>
 <body>
 
-<div class="version-tag">v4.3.2</div>
+<div class="version-tag">v4.5.2</div>
 
 <div class="modal-overlay" id="devPasswordModal">
     <div class="modal-content" style="max-width: 350px; text-align: center; border-top: 6px solid #e74c3c;">
@@ -136,7 +135,7 @@
 
 <!-- INFO MODAL FOR RULES EXPLANATION -->
 <div class="modal-overlay" id="infoModal">
-    <div class="modal-content" style="max-width: 550px; text-align: left; border-top: 6px solid #3498db;" id="infoModalBox">
+    <div class="modal-content" style="max-width: 600px; text-align: left; border-top: 6px solid #3498db;" id="infoModalBox">
         <h3 style="margin-bottom: 15px; color: #3498db; border-bottom: 2px solid #eee; padding-bottom: 10px;" id="infoModalTitle">Title</h3>
         <div id="infoModalBody" style="font-size: 0.95em; color: #444; line-height: 1.6;"></div>
         <button class="modal-btn" id="infoModalBtn" style="background: #3498db; margin-top: 25px;" onclick="closeInfoModal()">Understood</button>
@@ -145,7 +144,6 @@
 
 <div class="container" id="mainContainer">
 
-    <!-- WORK IN PROGRESS BANNER -->
     <div class="wip-banner">
         ⚠️ This is a work in progress website and will probably have a few bugs.
     </div>
@@ -162,9 +160,9 @@
     <h1>EE Rhyl Target Calculator</h1>
     
     <button id="lockMonthBtn" class="setup-btn lock-btn" style="display: none;" onclick="lockMonth()">🔒 Lock In Targets & Shifts</button>
-    <button id="setupModeBtn" class="setup-btn" style="display: none;" onclick="toggleSetupMode()">🛠️ Enable Setup Mode</button>
+    <button id="setupModeBtn" class="setup-btn" style="display: none;" onclick="toggleSetupMode()">🛠️️ Enable Setup Mode</button>
 
-    <!-- OVERALL SCORECARD (Strictly using original index(2).html CSS) -->
+    <!-- OVERALL SCORECARD (Uses standard .result-box, no inline colours) -->
     <div class="results-container" style="margin-bottom: 15px;">
         <div class="result-box" style="flex: 1;">
             <div class="result-label">OVERALL PERFORMANCE %</div>
@@ -179,13 +177,13 @@
     </div>
 
     <!-- TWIN GATES -->
-    <div style="display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; position: relative; z-index: 1;">
-        <div class="result-box" id="mobile-gate-box" style="flex: 1; min-width: 130px;">
+    <div class="twin-gates-container">
+        <div class="result-box" id="mobile-gate-box" style="flex: 1; min-width: 130px; background: #fff;">
             <div class="result-label" style="color: #2980b9;">📱 MOBILE POT</div>
             <div class="result-value" id="mobile-pot-score" style="font-size: 2.8em;">0.0%</div>
             <div id="mobile-gate-status" style="margin-top: 10px; font-weight: bold; background: #f2fafa; padding: 8px; border-radius: 6px; font-size: 0.9em;">🔒 LOCKED</div>
         </div>
-        <div class="result-box" id="home-gate-box" style="flex: 1; min-width: 130px;">
+        <div class="result-box" id="home-gate-box" style="flex: 1; min-width: 130px; background: #fff;">
             <div class="result-label" style="color: #27ae60;">🏠 HOME POT</div>
             <div class="result-value" id="home-pot-score" style="font-size: 2.8em;">0.0%</div>
             <div id="home-gate-status" style="margin-top: 10px; font-weight: bold; background: #f2fafa; padding: 8px; border-radius: 6px; font-size: 0.9em;">🔒 LOCKED</div>
@@ -241,6 +239,7 @@
                 <div style="font-size: 0.75em; color: #777; text-transform: uppercase;">Needed Today</div>
                 <div id="home-buffer-badge" style="margin-top: 10px; padding: 5px; border-radius: 4px; font-weight: bold; font-size: 0.85em;">...</div>
             </div>
+            <!-- Strip inline color here to match base .result-box CSS -->
             <div class="result-box" style="flex: 1; min-width: 140px; padding: 15px;">
                 <div class="result-label">OVERALL</div>
                 <div style="font-size: 1.8em; font-weight: bold; color: #333;" id="overall-daily-target">0.0%</div>
@@ -289,7 +288,8 @@
                         <th style="text-align: center;">Sold</th>
                         <th style="text-align: center;">KPI %</th>
                         <th style="text-align: center; line-height: 1.3;">
-                            <span style="color: white;">VPS (POT | ALL)</span>
+                            <span style="color: white;">VPS</span><br>
+                            <span style="font-size:0.8em; font-weight:normal;"><span style="color:#b2e0e3;">POT</span> | <span style="color:#f2fafa;">ALL</span></span>
                         </th>
                     </tr>
                 </thead>
@@ -309,7 +309,8 @@
                         <th style="text-align: center;">Sold</th>
                         <th style="text-align: center;">KPI %</th>
                         <th style="text-align: center; line-height: 1.3;">
-                            <span style="color: white;">VPS (POT | ALL)</span>
+                            <span style="color: white;">VPS</span><br>
+                            <span style="font-size:0.8em; font-weight:normal;"><span style="color:#b2e0e3;">POT</span> | <span style="color:#f2fafa;">ALL</span></span>
                         </th>
                     </tr>
                 </thead>
@@ -323,7 +324,7 @@
     <div class="credits">Designed for EE Rhyl by Reece Farrelly</div>
 </div>
 <script>
-    const APP_VERSION = "4.3.2";
+    const APP_VERSION = "4.5.2";
 
     const defaultCategories = [
         { name: "NEW HANDSETS", target: 0, achieved: 0, pot: "mobile" },
@@ -378,6 +379,10 @@
     let displayedOverall = 0;
     let displayedMobile = 0;
     let displayedHome = 0;
+    
+    let displayedDailyMobile = 0;
+    let displayedDailyHome = 0;
+    let displayedDailyOverall = 0;
 
     function openInfoModal(type) {
         let modal = document.getElementById('infoModal');
@@ -392,68 +397,145 @@
             box.style.borderTopColor = "#9b59b6";
             btn.style.background = "#9b59b6";
             body.innerHTML = `
-    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🎯 Targeting Basics</h4>
-    <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li style="margin-bottom: 8px;">The scheme focuses on six key performance indicators (KPIs) divided evenly across two areas: Mobile and Household[cite: 5].</li>
-        <li style="margin-bottom: 8px;"><strong>Target Calculation:</strong> Targets are calculated on a pro-rata basis depending on the days you work[cite: 5]. Store Managers and Assistant Managers receive a 25% target reduction[cite: 5].</li>
-        <li style="margin-bottom: 8px;"><strong>Unlocking and Caps:</strong> Each KPI unlocks individually once you achieve its specific target[cite: 5]. KPI achievement is capped at 125%, and any performance beyond this cannot be used to offset missed targets in other areas[cite: 5].</li>
-        <li><strong>The 75% Banking Rule:</strong> To bank commission in either the Mobile or Household categories, you must achieve a minimum average of 75% across the three KPIs within that specific category (this rule excludes Store Managers)[cite: 6, 7].</li>
-    </ul>
+                <p style="margin-top:0; margin-bottom:10px;">All commission is a discretionary, non-contractual benefit that the business can amend, withhold, deduct, or remove with reasonable notice and just cause. All colleagues are eligible to access the scheme. New starters gain access and receive targets after their fourth week.</p>
 
-    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">📱 Mobile Commission</h4>
-    <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li style="margin-bottom: 8px;">The three Mobile KPIs are New Handset, New SIM & MBB, and Upgrade PAYM[cite: 6].</li>
-        <li style="margin-bottom: 8px;">Commission varies from 10% to 75% of Post SR, depending on the sale and tenure[cite: 6]. For example, New Handsets (12+ months) pay 75% of Post SR, while a 30-day New SIM pays 10%[cite: 6].</li>
-        <li style="margin-bottom: 8px;">All New and Upgrade SME connections pay a flat £2.50 per sale[cite: 6].</li>
-        <li><strong>Device Mix:</strong> When your Upgrade PAYM target is set, at least 75% of those sales must be devices; falling short of this device mix results in a 25% reduction for all Upgrade PAYM commission[cite: 6].</li>
-    </ul>
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">🎯 Targeting Rules</h4>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;">The scheme consists of six individual KPIs split across two areas:<br>
+                    - <strong>Mobile:</strong> New Handset, New SIM & MBB, Upg PAYM.<br>
+                    - <strong>Household:</strong> New HBB, Reg HBB, New TV.</li>
+                    <li style="margin-bottom: 5px;">Each of the six KPIs is individually unlocked when you achieve its specific target.</li>
+                    <li style="margin-bottom: 5px;">Targets are calculated on a pro rata basis dependent on the number of days worked.</li>
+                    <li style="margin-bottom: 5px;">KPI achievement is strictly capped at 125%. Any achievement above this threshold is recorded as 125% and cannot be used to offset underperformance against other KPIs.</li>
+                </ul>
 
-    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🏠 Household Commission</h4>
-    <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li style="margin-bottom: 8px;">The three Household KPIs are New HBB (customer has no existing BT/EE broadband), Regrade HBB (existing broadband customer), and New TV[cite: 7].</li>
-        <li style="margin-bottom: 8px;">New Broadband variants pay 100% of Post SR[cite: 7].</li>
-        <li style="margin-bottom: 8px;">New TV variants pay 50% of Post SR[cite: 7].</li>
-        <li>Broadband Regrades pay 30% for SR Enrichment and 15% for SR Dilution[cite: 7].</li>
-    </ul>
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">📱 Mobile Commission Details</h4>
+                <p style="margin-bottom:10px;">There are three separate targets covering Consumer (Cons) and SME sales: New Handset, New SIM & MBB (Tablet, Watch, Laptop, and Mobile WIFI), and Upgrade PAYM.</p>
+                <strong style="display:block; margin-bottom:5px;">Mobile Commission Rates:</strong>
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.85em;">
+                    <tr style="background:#f2fafa; border-bottom:1px solid #ddd;">
+                        <th style="padding:6px; text-align:left;">Sale Type</th><th style="padding:6px; text-align:left;">Product</th><th style="padding:6px; text-align:left;">Tenure</th><th style="padding:6px; text-align:right;">Payout</th>
+                    </tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">Handset</td><td style="padding:4px;">12+ months</td><td style="padding:4px; text-align:right;">75%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">SIM Only</td><td style="padding:4px;">12+ months</td><td style="padding:4px; text-align:right;">50%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">SIM Only</td><td style="padding:4px;">30 days</td><td style="padding:4px; text-align:right;">10%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">MBB</td><td style="padding:4px;">12+ months</td><td style="padding:4px; text-align:right;">50%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">MBB</td><td style="padding:4px;">30 days</td><td style="padding:4px; text-align:right;">10%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">Handset</td><td style="padding:4px;">SR Enrich (12+m)</td><td style="padding:4px; text-align:right;">50%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">Handset</td><td style="padding:4px;">SR Dilution (12+m)</td><td style="padding:4px; text-align:right;">25%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">SIM Only</td><td style="padding:4px;">SR Enrich (12+m)</td><td style="padding:4px; text-align:right;">50%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">SIM Only</td><td style="padding:4px;">SR Dilution (12+m)</td><td style="padding:4px; text-align:right;">25%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">SIM Only</td><td style="padding:4px;">30 days</td><td style="padding:4px; text-align:right;">10%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">MBB</td><td style="padding:4px;">SR Enrich (12+m)</td><td style="padding:4px; text-align:right;">25%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Upgrade</td><td style="padding:4px;">MBB</td><td style="padding:4px;">SR Dilution (12+m)</td><td style="padding:4px; text-align:right;">10%</td></tr>
+                    <tr><td style="padding:4px;">Upgrade</td><td style="padding:4px;">MBB</td><td style="padding:4px;">30 days</td><td style="padding:4px; text-align:right;">10%</td></tr>
+                </table>
+                <strong style="display:block; margin-bottom:5px;">Specific Mobile Rules:</strong>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;">All New and Upgrade SME connections deliver a flat £2.50 per sale commission value.</li>
+                    <li style="margin-bottom: 5px;">When your Upg PAYM target is set at the start of the month, at least 75% of that target must be fulfilled by devices.</li>
+                    <li style="margin-bottom: 5px;">Failure to hit this 75% device mix results in a 25% reduction applied to all of your Upg PAYM commission.</li>
+                    <li style="margin-bottom: 5px;">To bank any of the three Mobile elements, the average of your three Mobile KPIs must be 75% or higher.</li>
+                </ul>
 
-    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">💸 Payments & Non-Targeted Sales</h4>
-    <ul style="padding-left: 20px; margin-bottom: 20px;">
-        <li style="margin-bottom: 8px;"><strong>Payments:</strong> Mobile commissions are paid one month in arrears once the target is achieved[cite: 5]. Household commissions are split: the first £10 is paid one month in arrears, and the remainder is paid two months in arrears after EE confirms the completed order[cite: 5].</li>
-        <li style="margin-bottom: 8px;"><strong>£5.00 per sale:</strong> Gaming, Home Security, Full Cover Insurance[cite: 7].</li>
-        <li style="margin-bottom: 8px;"><strong>£3.00 per sale:</strong> SIM Free Handset[cite: 7].</li>
-        <li style="margin-bottom: 8px;"><strong>£2.50 per sale:</strong> Damage Cover Insurance[cite: 7].</li>
-        <li><strong>£1.00 per sale:</strong> PrePay Handset, PrePay SIM Only, Scam Guard[cite: 7].</li>
-    </ul>
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">🏠 Household Commission Details</h4>
+                <p style="margin-bottom:10px;">Household is split into three targets: New HBB (not an existing BT/EE broadband customer), Reg HBB (existing BT/EE broadband customer), and New TV (not an existing BT/EE TV customer).</p>
+                <strong style="display:block; margin-bottom:5px;">Household Commission Rates:</strong>
+                <table style="width:100%; border-collapse: collapse; margin-bottom: 15px; font-size: 0.85em;">
+                    <tr style="background:#f2fafa; border-bottom:1px solid #ddd;">
+                        <th style="padding:6px; text-align:left;">Sale Type</th><th style="padding:6px; text-align:left;">Service</th><th style="padding:6px; text-align:left;">Transaction Type</th><th style="padding:6px; text-align:right;">Payout</th>
+                    </tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">New</td><td style="padding:4px;">Broadband</td><td style="padding:4px;">All Variants</td><td style="padding:4px; text-align:right;">100%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Regrade</td><td style="padding:4px;">Broadband</td><td style="padding:4px;">SR Enrichment</td><td style="padding:4px; text-align:right;">30%</td></tr>
+                    <tr style="border-bottom:1px solid #eee;"><td style="padding:4px;">Regrade</td><td style="padding:4px;">Broadband</td><td style="padding:4px;">SR Dilution</td><td style="padding:4px; text-align:right;">15%</td></tr>
+                    <tr><td style="padding:4px;">New</td><td style="padding:4px;">TV</td><td style="padding:4px;">All Variants</td><td style="padding:4px; text-align:right;">50%</td></tr>
+                </table>
+                <strong style="display:block; margin-bottom:5px;">Specific Household Rules:</strong>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;">To bank any of the three Household elements, the average of your three Household KPIs must be 75% or higher.</li>
+                </ul>
 
-    <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">🛑 The FCA Gateway & Deductions</h4>
-    <ul style="padding-left: 20px; margin-bottom: 0;">
-        <li style="margin-bottom: 8px;">Before any payout is finalised, your commission is subject to the FCA Gateway, a mandatory measure based on the average of your NPS and Customer Outcome Score[cite: 8].</li>
-        <li style="margin-bottom: 8px;">This score dictates your final commission percentage[cite: 8]:
-            <ul style="margin-top: 5px; margin-bottom: 5px;">
-                <li><strong>90% and above:</strong> 100% payout[cite: 8]</li>
-                <li><strong>80% to 89%:</strong> 90% payout[cite: 8]</li>
-                <li><strong>70% to 79%:</strong> 80% payout[cite: 8]</li>
-                <li><strong>60% to 69%:</strong> 70% payout[cite: 8]</li>
-                <li><strong>50% to 59%:</strong> 60% payout[cite: 8]</li>
-                <li><strong>0% to 49%:</strong> 0% payout[cite: 8]</li>
-            </ul>
-        </li>
-        <li>The business will remove your commission entirely if you fail to follow prescribed C365 and EE sales processes, incorrectly log sales in Nexus, receive a conduct disciplinary sanction, or fail to fulfil your contracted notice period[cite: 8]. The business also reserves the right to deduct commission to cover financial losses caused by negligence or malpractice[cite: 8].</li>
-    </ul>
-`;            
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">🎮 Other Fixed Commission</h4>
+                <p style="margin-bottom:10px;">The following non-targeted sales earn a fixed amount per eligible sale:</p>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;"><strong>Gaming:</strong> £5.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>Home Security:</strong> £5.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>Insurance (Full Cover):</strong> £5.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>Insurance (Damage Cover):</strong> £2.50 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>SIM Free Handset:</strong> £3.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>PrePay Handset:</strong> £1.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>PrePay SIM Only:</strong> £1.00 per sale.</li>
+                    <li style="margin-bottom: 5px;"><strong>Scam Guard:</strong> £1.00 per sale.</li>
+                </ul>
+
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">📅 Payment Schedule</h4>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;"><strong>Mobile:</strong> Paid one month in arrears if the target is achieved (e.g., January sales paid at the end of February).</li>
+                    <li style="margin-bottom: 5px;"><strong>Household:</strong> Split into two installments if the target is achieved. The first £10 is paid one month in arrears. Once the sale is confirmed as a completed order by EE, the remaining balance is paid two months in arrears.</li>
+                </ul>
+
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">🛑 FCA Gateway</h4>
+                <p style="margin-bottom:10px;">The FCA Gateway is a compulsory measure mandated by the FCA that is applied to all commission after your KPIs have been unlocked. The gateway score cannot be appealed or overturned, and it is calculated using the average of your NPS and Customer Outcome Score.</p>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;"><strong>90% and above:</strong> 100% payout.</li>
+                    <li style="margin-bottom: 5px;"><strong>80% and above:</strong> 90% payout.</li>
+                    <li style="margin-bottom: 5px;"><strong>70% and above:</strong> 80% payout.</li>
+                    <li style="margin-bottom: 5px;"><strong>60% and above:</strong> 70% payout.</li>
+                    <li style="margin-bottom: 5px;"><strong>50% and above:</strong> 60% payout.</li>
+                    <li style="margin-bottom: 5px;"><strong>0% and above:</strong> 0% payout.</li>
+                </ul>
+
+                <h4 style="margin-top:15px; margin-bottom:8px; color:#333;">⚖️ Compliance and Deductions</h4>
+                <p style="margin-bottom:10px;">Commission affects eligibility only and will not authorize a deduction from your standard salary. However, your commission may be removed entirely if:</p>
+                <ul style="padding-left: 20px; margin-bottom: 15px;">
+                    <li style="margin-bottom: 5px;">You fail to follow prescribed C365 and EE sales processes.</li>
+                    <li style="margin-bottom: 5px;">You fail to log sales correctly in the Nexus system.</li>
+                    <li style="margin-bottom: 5px;">You receive a sanction through the conduct disciplinary process.</li>
+                    <li style="margin-bottom: 5px;">You do not fulfill your contracted notice period when leaving the business.</li>
+                </ul>
+                <p style="margin-bottom:0;">The business exercises its right to deduct bonuses to compensate for any financial loss caused by negligence or malpractice.</p>
+            `;
         } else if (type === 'perf') {
             title.innerText = "📈 Performance Management";
             title.style.color = "#3498db";
             box.style.borderTopColor = "#3498db";
             btn.style.background = "#3498db";
             body.innerHTML = `
-                <p style="margin-top:0;">Here is how performance is tracked and managed:</p>
+                <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">Purpose and KPIs</h4>
+                <ul style="padding-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;">The performance management scheme is designed to identify strong performance, address sustained shortfalls, and provide colleagues with a fair opportunity to improve.</li>
+                    <li>You are assessed on the same six KPIs as the commission scheme, split into Mobile (New Handset, New SIM & MBB, Upg PAYM) and Household (New HBB, Reg HBB, New TV).</li>
+                </ul>
+
+                <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">Performance Bands and Calculation</h4>
+                <ul style="padding-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;">Individual KPI achievement is capped at 125%, and anything above that cannot offset underperformance in other areas.</li>
+                    <li style="margin-bottom: 8px;">Average achievement against your target is graded into three bands: Performing (100% to 125%), Underperforming (75% to 99.9%), and Severely underperforming (0% to 74.9%).</li>
+                    <li style="margin-bottom: 8px;">A severely underperforming score is referred to as a "RED result".</li>
+                    <li>Your monthly overall performance is calculated in three steps: averaging your three Mobile KPIs, averaging your three Household KPIs, and then taking the average of those two resulting percentages.</li>
+                </ul>
+
+                <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">Entering, Progressing, and Exiting the Process</h4>
+                <ul style="padding-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>Entry:</strong> A colleague is placed into the performance management process after receiving three RED results within a rolling six-month period.</li>
+                    <li style="margin-bottom: 8px;"><strong>Progression:</strong> If a colleague receives another RED result in the following monthly assessment, the case may progress to the next stage after an investigatory review of the circumstances.</li>
+                    <li><strong>Exit:</strong> A colleague will leave the process after three consecutive clear months without a RED result, provided no other formal processes apply.</li>
+                </ul>
+
+                <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">The Stages of Performance Management</h4>
+                <ul style="padding-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>Letter of concern:</strong> Sets expectations and establishes an informal improvement plan over a review period.</li>
+                    <li style="margin-bottom: 8px;"><strong>First written warning:</strong> Addresses continued shortfalls after a formal review, resulting in a formal improvement plan.</li>
+                    <li style="margin-bottom: 8px;"><strong>Final written warning:</strong> Addresses a further sustained shortfall and triggers a formal improvement period.</li>
+                    <li style="margin-bottom: 8px;"><strong>Dismissal review:</strong> Considers whether the required performance is achievable, potentially resulting in dismissal or another reasonable outcome.</li>
+                    <li>A stage can be repeated, extended, or paused if deemed reasonable, and dismissal is never triggered automatically by a score alone.</li>
+                </ul>
+
+                <h4 style="margin-top:0; color:#333; font-size:1.1em; margin-bottom:8px;">Support and Colleague Safeguards</h4>
                 <ul style="padding-left: 20px; margin-bottom: 0;">
-                    <li style="margin-bottom: 8px;"><strong>The 3 Tiers:</strong> Your monthly average puts you into one of three bands: Performing (100% to 125%), Underperforming (75% to 99.9%), or Severely Underperforming (0% to 74.9%).</li>
-                    <li style="margin-bottom: 8px;"><strong>The 'RED' Zone:</strong> Scoring in the severely underperforming band (under 75%) counts as a RED result. Like commission, you can't over-perform in one KPI past 125% to save your average.</li>
-                    <li style="margin-bottom: 8px;"><strong>The Process:</strong> You will only enter formal performance management if you hit three RED results within a rolling 6-month period.</li>
-                    <li style="margin-bottom: 8px;"><strong>Getting Clear:</strong> To exit the process, you need three clear months in a row without hitting RED.</li>
-                    <li><strong>Support First:</strong> Management will review your circumstances, offer support, and give you a fair chance to improve before moving through formal warnings or dismissal.</li>
+                    <li style="margin-bottom: 8px;">Before taking formal action, management is expected to offer reasonable support, such as coaching, training, or reasonable adjustments.</li>
+                    <li style="margin-bottom: 8px;">Any formal action requires that the colleague receives written notice of the concern, the evidence, and the possible consequences, with reasonable time allowed for preparation.</li>
+                    <li>Colleagues have the right to respond, present evidence, ask questions, and be accompanied at any meeting that could lead to formal disciplinary action or warnings.</li>
                 </ul>
             `;
         }
@@ -707,7 +789,7 @@
     function animateValue(element, start, end, duration) {
         if (!element) return;
         if (isNaN(start) || isNaN(end)) {
-            element.innerText = (end || 0).toFixed(1) + '%';
+            element.innerText = appLocked ? "🔒" : (end || 0).toFixed(1) + '%';
             return;
         }
         let startTimestamp = null;
@@ -718,6 +800,30 @@
             element.innerText = (start + (easeProgress * (end - start))).toFixed(1) + '%';
             if (progress < 1) window.requestAnimationFrame(step);
             else element.innerText = end.toFixed(1) + '%';
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    function animatePacingValue(element, start, end, duration) {
+        if (!element) return;
+        if (isNaN(start) || isNaN(end) || end <= 0.05) {
+            if (end <= 0.05) {
+                element.innerText = "DONE!";
+                element.style.color = "#27ae60";
+            } else {
+                element.innerText = "+" + end.toFixed(1) + '%';
+            }
+            return;
+        }
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = progress * (2 - progress);
+            const currentVal = start + (easeProgress * (end - start));
+            element.innerText = "+" + currentVal.toFixed(1) + '%';
+            if (progress < 1) window.requestAnimationFrame(step);
+            else element.innerText = "+" + end.toFixed(1) + '%';
         };
         window.requestAnimationFrame(step);
     }
@@ -809,7 +915,7 @@
                 missionMessage.style.display = 'block';
                 if (isSetupMode) {
                     missionMessage.className = "mission-message mission-setup";
-                    missionMessage.innerHTML = `<div style="text-align:center;"><strong>🛠️️ SETUP MODE ACTIVE</strong><br><br><span style="font-size:0.95em; color:#555;">Enter your mid-month numbers in peace.<br><br>Click <strong>Save & Lock Setup</strong> at the top when you are finished!</span></div>`;
+                    missionMessage.innerHTML = `<div style="text-align:center;"><strong>🛠️ SETUP MODE ACTIVE</strong><br><br><span style="font-size:0.95em; color:#555;">Enter your mid-month numbers in peace.<br><br>Click <strong>Save & Lock Setup</strong> at the top when you are finished!</span></div>`;
                 } else {
                     missionMessage.className = "mission-message mission-setup";
                     missionMessage.innerHTML = `
@@ -856,6 +962,9 @@
         const mobileScoreEl = document.getElementById('mobile-pot-score');
         const homeScoreEl = document.getElementById('home-pot-score');
 
+        let colorOverall = getKPIColor(overallScore);
+        if (currentEl) currentEl.style.color = colorOverall;
+
         try {
             if (isInitial || appLocked) { 
                 if (currentEl) currentEl.innerText = appLocked ? "🔒" : overallScore.toFixed(1) + '%'; 
@@ -872,7 +981,6 @@
             if (homeScoreEl) homeScoreEl.innerText = homePot.toFixed(1) + '%';
         }
         
-        if (currentEl) currentEl.style.color = getKPIColor(overallScore);
         displayedCurrentOverall = overallScore; 
         displayedMobile = mobilePot;
         displayedHome = homePot;
@@ -905,21 +1013,45 @@
             let shiftsLeft = pacingData.total - pacingData.completed;
             let standardDailyPace = 75 / pacingData.total;
             let expectedScore = standardDailyPace * pacingData.completed;
+
+            let baseMobileSum = 0;
+            let baseHomeSum = 0;
+            categories.forEach((cat, idx) => {
+                let baseAchieved = baselineData.achieved[idx] || 0;
+                let baseP = cat.target > 0 ? (baseAchieved / cat.target * 100) : 0;
+                let cappedBaseP = Math.min(baseP, 125);
+                if (cat.pot === "mobile") baseMobileSum += cappedBaseP;
+                if (cat.pot === "home") baseHomeSum += cappedBaseP;
+            });
+            let baseMobilePot = baseMobileSum / 3;
+            let baseHomePot = baseHomeSum / 3;
+            let baseOverallScore = (baseMobilePot + baseHomePot) / 2;
             
-            function updatePacingCard(prefix, currentScore) {
+            function updatePacingCard(prefix, currentScore, baseScore, displayTrackerRef) {
                 let targetEl = document.getElementById(`${prefix}-daily-target`);
                 let badgeEl = document.getElementById(`${prefix}-buffer-badge`);
                 
-                if (currentScore >= 75) {
-                    targetEl.innerText = "DONE!";
-                    targetEl.style.color = "#27ae60";
-                } else if (shiftsLeft <= 0) {
-                    targetEl.innerText = "0.0%";
-                    targetEl.style.color = "#e74c3c";
+                let dailyHurdle = 0;
+                if (shiftsLeft > 0) {
+                    dailyHurdle = (75 - baseScore) / shiftsLeft;
+                }
+
+                let gainedToday = currentScore - baseScore;
+                let leftToday = dailyHurdle - gainedToday;
+                
+                if (currentScore >= 75 || shiftsLeft <= 0 || leftToday <= 0.05) {
+                    if (currentScore >= 75 || leftToday <= 0.05) {
+                        targetEl.innerText = "DONE!";
+                        targetEl.style.color = "#27ae60";
+                    } else {
+                        targetEl.innerText = "0.0%";
+                        targetEl.style.color = "#e74c3c";
+                    }
+                    displayTrackerRef = 0; 
                 } else {
-                    let needed = (75 - currentScore) / shiftsLeft;
-                    targetEl.innerText = "+" + needed.toFixed(1) + "%";
                     targetEl.style.color = "#333";
+                    animatePacingValue(targetEl, displayTrackerRef, leftToday, 700);
+                    displayTrackerRef = leftToday; 
                 }
                 
                 let diff = currentScore - expectedScore;
@@ -940,11 +1072,13 @@
                     badgeEl.innerText = `🟠 0 Days Banked`;
                     badgeEl.style.background = "#fef9e7"; badgeEl.style.color = "#f39c12"; badgeEl.style.border = "1px solid #f39c12";
                 }
+                return displayTrackerRef;
             }
             
-            updatePacingCard('mobile', mobilePot);
-            updatePacingCard('home', homePot);
-            updatePacingCard('overall', overallScore);
+            displayedDailyMobile = updatePacingCard('mobile', mobilePot, baseMobilePot, displayedDailyMobile);
+            displayedDailyHome = updatePacingCard('home', homePot, baseHomePot, displayedDailyHome);
+            displayedDailyOverall = updatePacingCard('overall', overallScore, baseOverallScore, displayedDailyOverall);
+
         } else {
             if (pacingContainer) pacingContainer.style.display = 'none';
         }
